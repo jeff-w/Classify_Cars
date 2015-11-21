@@ -52,6 +52,98 @@ public class Classifier {
     	}
     }
 
+    /* 1. read INFILE line by line
+     * 2. for each line, compute the 4 probabilities
+     *      predicted class = max of the 4
+     * 3. original 6 attr | Actual | Measured | Correct?
+     *      (print these to terminal AND a new file)
+     */
+    public test(){
+        Scanner in = new Scanner(new FileReader("test_data.txt"));
+        while(in.hasNext()){
+            //read line and tokenize
+            String line = in.next();
+            String[] fields = line.split(",");  //size 7
+            
+            //compute 4 probabilities
+            double pUnacc = classificationPriorProbabilities[indexOfClassification(fields[6])] * conditionalProb(fields);
+            
+            
+            
+            
+            
+        }
+    }
+
+    /* Takes in array of size 7. Will only use first 6 fields for multiplication of independent probabilities.
+     */
+    private double conditionalProb(String[] fields){
+        double product = 1.0;
+        
+        for(int i = 0; i < 6; i++){
+            product *= likihoods[indexOfAttribute(i, fields[i])][indexOfClassification(fields[6])];
+        }
+        
+        return product;
+    }
+
+    /* Gets the index (0-20) of attribute "attr" and value "field"
+     **/
+    private int indexOfAttribute(int attr, String field){
+        int row = -1;
+        switch(attr){
+            case 0: //buying
+                if(field.equals("v-high"))  row = ATTR_BUYING_VHIGH_INDEX;
+                if(field.equals("high"))    row = ATTR_BUYING_HIGH_INDEX;
+                if(field.equals("med"))     row = ATTR_BUYING_MED_INDEX;
+                if(field.equals("low"))     row = ATTR_BUYING_LOW_INDEX;
+                break;
+            case 1: //maint
+                if(field.equals("v-high"))  row = ATTR_MAINT_VHIGH_INDEX;
+                if(field.equals("high"))    row = ATTR_MAINT_HIGH_INDEX;
+                if(field.equals("med"))     row = ATTR_MAINT_MED_INDEX;
+                if(field.equals("low"))     row = ATTR_MAINT_LOW_INDEX;
+                break;
+            case 2: //doors
+                if(field.equals("2"))       row = ATTR_DOORS_2_INDEX;
+                if(field.equals("3"))       row = ATTR_DOORS_3_INDEX;
+                if(field.equals("4"))       row = ATTR_DOORS_4_INDEX;
+                if(field.equals("5-more"))  row = ATTR_DOORS_5MORE_INDEX;
+                break;
+            case 3: //persons
+                if(field.equals("2"))       row = ATTR_PERSONS_2_INDEX;
+                if(field.equals("4"))       row = ATTR_PERSONS_4_INDEX;
+                if(field.equals("more"))    row = ATTR_PERSONS_MORE_INDEX;
+                break;
+            case 4: //lug_boot
+                if(field.equals("small"))   row = ATTR_LUG_BOOT_SMALL_INDEX;
+                if(field.equals("med"))     row = ATTR_LUG_BOOT_MED_INDEX;
+                if(field.equals("big"))     row = ATTR_LUG_BOOT_BIG_INDEX;
+                break;
+            case 5: //safety
+                if(field.equals("low"))     row = ATTR_SAFETY_LOW_INDEX;
+                if(field.equals("med"))     row = ATTR_SAFETY_MED_INDEX;
+                if(field.equals("high"))    row = ATTR_SAFETY_HIGH_INDEX;
+                break;
+            default:
+                break;      
+        }
+        return row;
+    }
+
+    /* Gets the index (0-3) of the classification
+     **/
+    private int indexOfClassification(String field){
+        int col = -1;
+        
+        if(classification.equals("unacc"))  col = CLASS_UNACC_INDEX;
+        if(classification.equals("acc"))    col = CLASS_ACC_INDEX;
+        if(classification.equals("good"))   col = CLASS_GOOD_INDEX;
+        if(classification.equals("v-good")) col = CLASS_VGOOD_INDEX;
+        
+        return col;
+    }
+
     /**
      * @param args the command line arguments
      */
