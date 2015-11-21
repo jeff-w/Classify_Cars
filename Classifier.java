@@ -6,6 +6,9 @@
  * @version 1.00 2015/11/19
  */
 
+/*IMPORTS*/
+import java.util.Scanner;
+import java.io.*;
 
 public class Classifier {
 
@@ -58,8 +61,17 @@ public class Classifier {
      * 3. original 6 attr | Actual | Measured | Correct?
      *      (print these to terminal AND a new file)
      */
-    public test(){
-        Scanner in = new Scanner(new FileReader("test_data.txt"));
+    public void test(){
+        Scanner in =  null;
+        try{
+            in = new Scanner(new FileReader("test_data.txt"));
+        }
+        catch(FileNotFoundException e){
+            System.out.println("[EXITING] File not found: " + e);
+            System.exit(1);
+        }
+        
+
         while(in.hasNext()){
             //read line and tokenize
             String line = in.next();
@@ -81,7 +93,7 @@ public class Classifier {
         double product = 1.0;
         
         for(int i = 0; i < 6; i++){
-            product *= likihoods[indexOfAttribute(i, fields[i])][indexOfClassification(fields[6])];
+            product *= likelihoods[indexOfAttribute(i, fields[i])][indexOfClassification(fields[6])];
         }
         
         return product;
@@ -133,7 +145,7 @@ public class Classifier {
 
     /* Gets the index (0-3) of the classification
      **/
-    private int indexOfClassification(String field){
+    private int indexOfClassification(String classification){
         int col = -1;
         
         if(classification.equals("unacc"))  col = CLASS_UNACC_INDEX;
