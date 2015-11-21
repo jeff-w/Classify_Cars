@@ -78,22 +78,31 @@ public class Classifier {
             String[] fields = line.split(",");  //size 7
             
             //compute 4 probabilities
-            double pUnacc = classificationPriorProbabilities[indexOfClassification(fields[6])] * conditionalProb(fields);
+            double pUnacc = classificationPriorProbabilities[indexOfClassification("unacc")] 
+                            * conditionalProb(fields, "unacc");
+            double pAcc   = classificationPriorProbabilities[indexOfClassification("acc")]
+                            * conditionalProb(fields, "acc");
+            double pGood  = classificationPriorProbabilities[indexOfClassification("good")]
+                            * conditionalProb(fields, "good");
+            double pVgood = classificationPriorProbabilities[indexOfClassification("vgood")]
+                            * conditionalProb(fields, "vgood");
             
-            
-            
+            //TODO - jeffrey
             
             
         }
     }
 
-    /* Takes in array of size 7. Will only use first 6 fields for multiplication of independent probabilities.
+    /* Takes in array of size 7. 
+       Will only use first 6 fields for multiplication of independent probabilities.
      */
-    private double conditionalProb(String[] fields){
+    private double conditionalProb(String[] fields, String classification){
         double product = 1.0;
         
         for(int i = 0; i < 6; i++){
-            product *= likelihoods[indexOfAttribute(i, fields[i])][indexOfClassification(fields[6])];
+            product *= likelihoods
+                        [indexOfAttribute(i, fields[i])]
+                        [indexOfClassification(classification)];
         }
         
         return product;
@@ -105,13 +114,13 @@ public class Classifier {
         int row = -1;
         switch(attr){
             case 0: //buying
-                if(field.equals("v-high"))  row = ATTR_BUYING_VHIGH_INDEX;
+                if(field.equals("vhigh"))   row = ATTR_BUYING_VHIGH_INDEX;
                 if(field.equals("high"))    row = ATTR_BUYING_HIGH_INDEX;
                 if(field.equals("med"))     row = ATTR_BUYING_MED_INDEX;
                 if(field.equals("low"))     row = ATTR_BUYING_LOW_INDEX;
                 break;
             case 1: //maint
-                if(field.equals("v-high"))  row = ATTR_MAINT_VHIGH_INDEX;
+                if(field.equals("vhigh"))   row = ATTR_MAINT_VHIGH_INDEX;
                 if(field.equals("high"))    row = ATTR_MAINT_HIGH_INDEX;
                 if(field.equals("med"))     row = ATTR_MAINT_MED_INDEX;
                 if(field.equals("low"))     row = ATTR_MAINT_LOW_INDEX;
@@ -120,7 +129,7 @@ public class Classifier {
                 if(field.equals("2"))       row = ATTR_DOORS_2_INDEX;
                 if(field.equals("3"))       row = ATTR_DOORS_3_INDEX;
                 if(field.equals("4"))       row = ATTR_DOORS_4_INDEX;
-                if(field.equals("5-more"))  row = ATTR_DOORS_5MORE_INDEX;
+                if(field.equals("5more"))   row = ATTR_DOORS_5MORE_INDEX;
                 break;
             case 3: //persons
                 if(field.equals("2"))       row = ATTR_PERSONS_2_INDEX;
