@@ -64,14 +64,13 @@ public class Classifier {
     public void test(){
         Scanner in =  null;
         try{
-            in = new Scanner(new FileReader("test_data.txt"));
+            in = new Scanner(new FileReader("test_manual_split.txt"));
         }
         catch(FileNotFoundException e){
             System.out.println("[EXITING] File not found: " + e);
             System.exit(1);
         }
         
-
         while(in.hasNext()){
             //read line and tokenize
             String line = in.next();
@@ -90,7 +89,12 @@ public class Classifier {
             //TODO - jeffrey
             
             
+            
         }
+
+
+
+
     }
 
     /* Takes in array of size 7. 
@@ -170,6 +174,10 @@ public class Classifier {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("yes");
+
+        // Classifier c = new Classifier();
+        // c.test();
+
+        System.out.println("\n" + "yes");
     }
 }
