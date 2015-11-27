@@ -191,6 +191,17 @@ public class Classifier {
         out.close();
     }
 
+    /* Returns index of the classification
+    */
+    public int confusionIndex(String type){
+        if(type.equals("unacc"))    { return 0; }
+        if(type.equals("acc"))      { return 1; }
+        if(type.equals("good"))     { return 2; }
+        if(type.equals("vgood"))    { return 3; }
+
+        return -1;
+    }
+
     /* Builds the Confusion Matrix generated from the test() step 
     */
     public int[][] buildConfusionMatrix(String type){
@@ -218,19 +229,14 @@ public class Classifier {
             String line = in.next();
             String[] fields = line.split(",");  //size 9
 
+            /*original 6 attr | Actual | Measured | Correct*/
 
-            //TODO - Jeffrey - working on step 4
-
+            matrix[confusionIndex(fields[6])][confusionIndex(fields[7])]++;
         }
 
-
-
-
-
-
-
-
         in.close();
+
+        return matrix;
     }
 
     /* Checks if double d is greater than all three other doubles
