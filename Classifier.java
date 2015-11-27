@@ -9,7 +9,7 @@
 Step 1      DONE
 Step 2      TODO    ***
 Step 3      DONE
-Step 4      TODO    ***
+Step 4      DONE
 Step 5      TODO    ***
 Step 6      TODO    ***
 Step 7      TODO    ***
