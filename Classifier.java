@@ -7,7 +7,7 @@
 
 /*
 Step 1      DONE
-Step 2      TODO    ***
+Step 2      TODO    In Progress - Kevin
 Step 3      DONE
 Step 4      DONE
 Step 5      TODO    ***
@@ -23,49 +23,49 @@ import java.io.*;
 public class Classifier {
 
     // Variables for manual text files
-    private static final String MANUAL_TRAINING = "train_manual_split.txt";     //356-1728
-    private static final String MANUAL_TESTING = "test_manual_split.txt";       //1-355
-    private static final String MANUAL_RESULTS = "results_manual_split.txt";
+    private static final String MANUAL_TRAINING         = "train_manual_split.txt";     //356-1728
+    private static final String MANUAL_TESTING          = "test_manual_split.txt";      //1-355
+    private static final String MANUAL_RESULTS          = "results_manual_split.txt";
 
     // Variables for random text files
-    private static final String DATA_FILE = "car.data";
-    private static final String RANDOM_TRAINING = "train_random_split.txt";
-    private static final String RANDOM_TESTING = "test_random_split.txt";
-    private static final String RANDOM_RESULTS = "results_random_split.txt";
+    private static final String DATA_FILE               = "car.data";
+    private static final String RANDOM_TRAINING         = "train_random_split.txt";
+    private static final String RANDOM_TESTING          = "test_random_split.txt";
+    private static final String RANDOM_RESULTS          = "results_random_split.txt";
 
     // Indices into our arrays (for classifications)
-    private static final int CLASS_UNACC_INDEX = 0;
-    private static final int CLASS_ACC_INDEX = 1;
-    private static final int CLASS_GOOD_INDEX = 2;
-    private static final int CLASS_VGOOD_INDEX = 3;
+    private static final int CLASS_UNACC_INDEX          = 0;
+    private static final int CLASS_ACC_INDEX            = 1;
+    private static final int CLASS_GOOD_INDEX           = 2;
+    private static final int CLASS_VGOOD_INDEX          = 3;
 
     // Indices into our arrays (for attributes)
-    private static final int ATTR_BUYING_VHIGH_INDEX = 0;
-    private static final int ATTR_BUYING_HIGH_INDEX = 1;
-    private static final int ATTR_BUYING_MED_INDEX = 2;
-    private static final int ATTR_BUYING_LOW_INDEX = 3;
-    private static final int ATTR_MAINT_VHIGH_INDEX = 4;
-    private static final int ATTR_MAINT_HIGH_INDEX = 5;
-    private static final int ATTR_MAINT_MED_INDEX = 6;
-    private static final int ATTR_MAINT_LOW_INDEX = 7;
-    private static final int ATTR_DOORS_2_INDEX = 8;
-    private static final int ATTR_DOORS_3_INDEX = 9;
-    private static final int ATTR_DOORS_4_INDEX = 10;
-    private static final int ATTR_DOORS_5MORE_INDEX = 11;
-    private static final int ATTR_PERSONS_2_INDEX = 12;
-    private static final int ATTR_PERSONS_4_INDEX = 13;
-    private static final int ATTR_PERSONS_MORE_INDEX = 14;
-    private static final int ATTR_LUG_BOOT_SMALL_INDEX = 15;
-    private static final int ATTR_LUG_BOOT_MED_INDEX = 16;
-    private static final int ATTR_LUG_BOOT_BIG_INDEX = 17;
-    private static final int ATTR_SAFETY_LOW_INDEX = 18;
-    private static final int ATTR_SAFETY_MED_INDEX = 19;
-    private static final int ATTR_SAFETY_HIGH_INDEX = 20; 
+    private static final int ATTR_BUYING_VHIGH_INDEX    = 0;
+    private static final int ATTR_BUYING_HIGH_INDEX     = 1;
+    private static final int ATTR_BUYING_MED_INDEX      = 2;
+    private static final int ATTR_BUYING_LOW_INDEX      = 3;
+    private static final int ATTR_MAINT_VHIGH_INDEX     = 4;
+    private static final int ATTR_MAINT_HIGH_INDEX      = 5;
+    private static final int ATTR_MAINT_MED_INDEX       = 6;
+    private static final int ATTR_MAINT_LOW_INDEX       = 7;
+    private static final int ATTR_DOORS_2_INDEX         = 8;
+    private static final int ATTR_DOORS_3_INDEX         = 9;
+    private static final int ATTR_DOORS_4_INDEX         = 10;
+    private static final int ATTR_DOORS_5MORE_INDEX     = 11;
+    private static final int ATTR_PERSONS_2_INDEX       = 12;
+    private static final int ATTR_PERSONS_4_INDEX       = 13;
+    private static final int ATTR_PERSONS_MORE_INDEX    = 14;
+    private static final int ATTR_LUG_BOOT_SMALL_INDEX  = 15;
+    private static final int ATTR_LUG_BOOT_MED_INDEX    = 16;
+    private static final int ATTR_LUG_BOOT_BIG_INDEX    = 17;
+    private static final int ATTR_SAFETY_LOW_INDEX      = 18;
+    private static final int ATTR_SAFETY_MED_INDEX      = 19;
+    private static final int ATTR_SAFETY_HIGH_INDEX     = 20; 
 
-    private int[] attributeCounts = new int[21];
-    private double[] attributePriorProbabilities = new double[21];
-    private double[] classificationPriorProbabilities = new double[4];
-    private double[][] likelihoods = new double[21][4];
+    private int[] attributeCounts                       = new int[21];
+    private double[] attributePriorProbabilities        = new double[21];
+    private double[] classificationPriorProbabilities   = new double[4];
+    private double[][] likelihoods                      = new double[21][4];
 
     /**
      * Creates a new instance of <code>Classifier</code>.
@@ -191,17 +191,6 @@ public class Classifier {
         out.close();
     }
 
-    /* Returns index of the classification
-    */
-    public int confusionIndex(String type){
-        if(type.equals("unacc"))    { return 0; }
-        if(type.equals("acc"))      { return 1; }
-        if(type.equals("good"))     { return 2; }
-        if(type.equals("vgood"))    { return 3; }
-
-        return -1;
-    }
-
     /* Builds the Confusion Matrix generated from the test() step 
     */
     public int[][] buildConfusionMatrix(String type){
@@ -258,6 +247,17 @@ public class Classifier {
         }
         
         return product;
+    }
+
+    /* Returns index of the classification
+    */
+    private int confusionIndex(String type){
+        if(type.equals("unacc"))    { return 0; }
+        if(type.equals("acc"))      { return 1; }
+        if(type.equals("good"))     { return 2; }
+        if(type.equals("vgood"))    { return 3; }
+
+        return -1;
     }
 
     /* Gets the index (0-20) of attribute "attr" and value "field"
