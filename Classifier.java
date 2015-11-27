@@ -1,16 +1,37 @@
 /**
  * @(#)Classifier.java
  *
- *
  * @author 
  * @version 1.00 2015/11/19
  */
 
+/*
+Step 1      DONE
+Step 2      TODO    ***
+Step 3      DONE
+Step 4      TODO    ***
+Step 5      TODO    ***
+Step 6      TODO    ***
+Step 7      TODO    ***
+Step 8      TODO    ***
+*/
+
 /*IMPORTS*/
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 
 public class Classifier {
+
+    // Variables for manual text files
+    private static final String MANUAL_TRAINING = "train_manual_split.txt";     //356-1728
+    private static final String MANUAL_TESTING = "test_manual_split.txt";       //1-355
+    private static final String MANUAL_RESULTS = "results_manual_split.txt";
+
+    // Variables for random text files
+    private static final String DATA_FILE = "car.data";
+    private static final String RANDOM_TRAINING = "train_random_split.txt";
+    private static final String RANDOM_TESTING = "test_random_split.txt";
+    private static final String RANDOM_RESULTS = "results_random_split.txt";
 
     // Indices into our arrays (for classifications)
     private static final int CLASS_UNACC_INDEX = 0;
@@ -55,19 +76,77 @@ public class Classifier {
     	}
     }
 
+    /* Splits "car.data" file randomly by using modulo
+    ~80% to training
+    ~20% to testing 
+    */
+    public void randomSplit(){
+        Random rand = new Random();
+
+        Scanner in = null;
+        PrintWriter outTrain = null;
+        PrintWriter outTest = null;
+        try{
+            in = new Scanner(new FileReader(DATA_FILE));
+            outTrain = new PrintWriter(RANDOM_TRAINING, "UTF-8");
+            outTest = new PrintWriter(RANDOM_TESTING, "UTF-8");
+        }
+        catch(FileNotFoundException e){
+            System.out.println("[EXITING] File not found (Scanner): " + e);
+            System.exit(1);
+        }
+        catch(UnsupportedEncodingException e){
+            System.out.println("[EXITING] File not found (PrintWriter): " + e);
+            System.exit(1);
+        }
+
+        while(in.hasNext()){
+            String line = in.next();
+
+            if(rand.nextInt(5) == 0){
+                // 1 in 5 write to TEST
+                outTest.println(line);
+            }
+            else{
+                // 4 in 5 write to TRAIN
+                outTrain.println(line);
+            }
+        }
+
+        in.close();
+        outTrain.close();
+        outTest.close();
+    }
+
     /* 1. read INFILE line by line
      * 2. for each line, compute the 4 probabilities
      *      predicted class = max of the 4
      * 3. original 6 attr | Actual | Measured | Correct?
      *      (print these to terminal AND a new file)
      */
-    public void test(){
+    public void test(String type){
         Scanner in =  null;
+        PrintWriter out = null;
         try{
-            in = new Scanner(new FileReader("test_manual_split.txt"));
+            if(type.equals("MANUAL")){
+                in = new Scanner(new FileReader(MANUAL_TESTING));
+                out = new PrintWriter(MANUAL_RESULTS, "UTF-8");
+            }
+            else if(type.equals("RANDOM")){
+                in = new Scanner(new FileReader(RANDOM_TESTING));
+                out = new PrintWriter(RANDOM_RESULTS, "UTF-8");
+            }
+            else{
+                System.out.println("[EXITING] test() function: unsupported run type: " + type);
+                System.exit(1);
+            }
         }
         catch(FileNotFoundException e){
-            System.out.println("[EXITING] File not found: " + e);
+            System.out.println("[EXITING] File not found (Scanner): " + e);
+            System.exit(1);
+        }
+        catch(UnsupportedEncodingException e){
+            System.out.println("[EXITING] File not found (PrintWriter): " + e);
             System.exit(1);
         }
         
@@ -86,15 +165,36 @@ public class Classifier {
             double pVgood = classificationPriorProbabilities[indexOfClassification("vgood")]
                             * conditionalProb(fields, "vgood");
             
-            //TODO - jeffrey
+            //classify it as the greatest probability
+            String result = null;
+            if(greatestDouble(pUnacc, pAcc, pGood, pVgood)){ result = "unacc";  }
+            if(greatestDouble(pAcc, pUnacc, pGood, pVgood)){ result = "acc";    }
+            if(greatestDouble(pGood, pUnacc, pAcc, pVgood)){ result = "good";   }
+            if(greatestDouble(pVgood, pUnacc, pAcc, pGood)){ result = "vgood";  }
+
+            String correct = result.equals(fields[6]) ? "yes" : "no";
+                
+            //write the new file with results
+            out.print(line);
+            out.print("," + result);
+            out.println("," + correct);
             
-            
-            
+            //write the results to terminal output
+            System.out.print(line + "\t");
+            System.out.print(result + "\t");
+            System.out.println(correct);
         }
 
 
+        //cleanup
+        in.close();
+        out.close();
+    }
 
-
+    /* Checks if double d is greater than all three other doubles
+    */
+    private boolean greatestDouble(double d, double a, double b, double c){
+        return (d > a && d > b && d > c);
     }
 
     /* Takes in array of size 7. 
@@ -164,7 +264,7 @@ public class Classifier {
         if(classification.equals("unacc"))  col = CLASS_UNACC_INDEX;
         if(classification.equals("acc"))    col = CLASS_ACC_INDEX;
         if(classification.equals("good"))   col = CLASS_GOOD_INDEX;
-        if(classification.equals("v-good")) col = CLASS_VGOOD_INDEX;
+        if(classification.equals("vgood"))  col = CLASS_VGOOD_INDEX;
         
         return col;
     }
@@ -173,9 +273,8 @@ public class Classifier {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
 
-        // Classifier c = new Classifier();
+        //Classifier c = new Classifier();
         // c.test();
 
         System.out.println("\n" + "yes");
