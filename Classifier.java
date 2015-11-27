@@ -6,11 +6,8 @@
  * @version 1.00 2015/11/19
  */
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import java.util.Scanner;
+import java.io.*;
 
 public class Classifier {
 
@@ -62,16 +59,6 @@ public class Classifier {
     private double[] classificationPriorProbabilities = new double[4];
     private double[][] likelihoods = new double[21][4];
 
-    private int indexOfAttribute(int attribute, String value) {
-    	// TODO
-    	return -1;
-    }
-
-    private int indexOfClassification(String value) {
-    	// TODO
-    	return -1;
-    }
-
     public Classifier() {
     	for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
     		for (int j = 0; j < NUM_CLASSIFICATIONS; j++) {
@@ -108,11 +95,11 @@ public class Classifier {
     }
 
     private void calculateProbabilities() {
-        for (int i = 0; i < NUM_ATTRIBUTES; i++) {
-            attributePriorProbabilities[i] = (double) attributeCounts[i] / numDataPoints;
-            for (int j = 0; i < NUM_CLASSIFICATIONS; i++) {
-                double jointProbability = (double) jointCounts[i][j] / numDataPoints;
-                likelihoods[i][j] = attributePriorProbabilities[i] / jointProbability;
+        for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
+            attributePriorProbabilities[i] = ((double) attributeCounts[i]) / ((double) numDataPoints);
+            for (int j = 0; j < NUM_CLASSIFICATIONS; j++) {
+                double jointProbability = ((double) jointCounts[i][j]) / ((double) numDataPoints);
+                likelihoods[i][j] = jointProbability / attributePriorProbabilities[i];
             }
         }
         for (int i = 0; i < NUM_CLASSIFICATIONS; i++) {
@@ -123,13 +110,142 @@ public class Classifier {
     public void train(String filename) {
     	loadCountsFromFile(filename);
         calculateProbabilities();
+        System.out.println("Total data points: " + numDataPoints);
+        for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
+            System.out.format("%f, %f, %f, %f\n", likelihoods[i][0], likelihoods[i][1], likelihoods[i][2], likelihoods[i][3]);
+        }
+    }
+
+    /* 1. read INFILE line by line
+     * 2. for each line, compute the 4 probabilities
+     *      predicted class = max of the 4
+     * 3. original 6 attr | Actual | Measured | Correct?
+     *      (print these to terminal AND a new file)
+     */
+    public void test(){
+        Scanner in =  null;
+        try{
+            in = new Scanner(new FileReader("test_manual_split.txt"));
+        }
+        catch(FileNotFoundException e){
+            System.out.println("[EXITING] File not found: " + e);
+            System.exit(1);
+        }
+        
+        while(in.hasNext()){
+            //read line and tokenize
+            String line = in.next();
+            String[] fields = line.split(",");  //size 7
+            
+            //compute 4 probabilities
+            double pUnacc = classificationPriorProbabilities[indexOfClassification("unacc")] 
+                            * conditionalProb(fields, "unacc");
+            double pAcc   = classificationPriorProbabilities[indexOfClassification("acc")]
+                            * conditionalProb(fields, "acc");
+            double pGood  = classificationPriorProbabilities[indexOfClassification("good")]
+                            * conditionalProb(fields, "good");
+            double pVgood = classificationPriorProbabilities[indexOfClassification("vgood")]
+                            * conditionalProb(fields, "vgood");
+            
+            //TODO - jeffrey
+            
+            
+            
+        }
+
+
+
+
+    }
+
+    /* Takes in array of size 7. 
+       Will only use first 6 fields for multiplication of independent probabilities.
+     */
+    private double conditionalProb(String[] fields, String classification){
+        double product = 1.0;
+        
+        for(int i = 0; i < 6; i++){
+            product *= likelihoods
+                        [indexOfAttribute(i, fields[i])]
+                        [indexOfClassification(classification)];
+        }
+        
+        return product;
+    }
+
+    /* Gets the index (0-20) of attribute "attr" and value "field"
+     **/
+    private int indexOfAttribute(int attr, String field){
+        switch(attr){
+            case 0: //buying
+                if (field.equals("vhigh")) { return ATTR_BUYING_VHIGH_INDEX; }
+                else if (field.equals("high")) { return ATTR_BUYING_HIGH_INDEX; }
+                else if (field.equals("med")) { return ATTR_BUYING_MED_INDEX; }
+                else if (field.equals("low")) { return ATTR_BUYING_LOW_INDEX; }
+                else { return -1; }
+            case 1: //maint
+                if (field.equals("vhigh")) { return ATTR_MAINT_VHIGH_INDEX; }
+                else if (field.equals("high")) { return ATTR_MAINT_HIGH_INDEX; }
+                else if (field.equals("med")) { return ATTR_MAINT_MED_INDEX; }
+                else if (field.equals("low")) { return ATTR_MAINT_LOW_INDEX; }
+                else { return -1; }
+            case 2: //doors
+                if (field.equals("2")) { return ATTR_DOORS_2_INDEX; }
+                else if (field.equals("3")) { return ATTR_DOORS_3_INDEX; }
+                else if (field.equals("4")) { return ATTR_DOORS_4_INDEX; }
+                else if (field.equals("5more")) { return ATTR_DOORS_5MORE_INDEX; }
+                else { return -1; }
+            case 3: //persons
+                if (field.equals("2")) { return ATTR_PERSONS_2_INDEX; }
+                else if (field.equals("4")) { return ATTR_PERSONS_4_INDEX; }
+                else if (field.equals("more")) { return ATTR_PERSONS_MORE_INDEX; }
+                else { return -1; }
+            case 4: //lug_boot
+                if (field.equals("small")) { return ATTR_LUG_BOOT_SMALL_INDEX; }
+                else if (field.equals("med")) { return ATTR_LUG_BOOT_MED_INDEX; }
+                else if (field.equals("big")) { return ATTR_LUG_BOOT_BIG_INDEX; }
+                else { return -1; }
+            case 5: //safety
+                if (field.equals("low")) { return ATTR_SAFETY_LOW_INDEX; }
+                else if (field.equals("med")) { return ATTR_SAFETY_MED_INDEX; }
+                else if (field.equals("high")) { return ATTR_SAFETY_HIGH_INDEX; }
+                else { return -1; }
+            default:
+                return -1;     
+        }
+    }
+
+    /* Gets the index (0-3) of the classification
+     **/
+    private int indexOfClassification(String classification){
+        if (classification.equals("unacc")) {
+            return CLASS_UNACC_INDEX;
+        
+        } else if (classification.equals("acc")) {
+            return CLASS_ACC_INDEX;
+        
+        } else if(classification.equals("good")) {
+            return CLASS_GOOD_INDEX;
+        
+        }  else if(classification.equals("vgood")) {
+            return CLASS_VGOOD_INDEX;
+        
+        } else {
+            return -1;
+        }
     }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        System.out.println("yes");
+        
+        if (args.length < 1) {
+            System.err.println("No file specified.");
+        } else {
+            Classifier classifier = new Classifier();
+            classifier.train(args[0]);
+            System.err.println("Training complete.");
+        }
     }
 }
