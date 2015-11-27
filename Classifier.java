@@ -191,6 +191,48 @@ public class Classifier {
         out.close();
     }
 
+    /* Builds the Confusion Matrix generated from the test() step 
+    */
+    public int[][] buildConfusionMatrix(String type){
+        Scanner in = null;
+        try{
+            if(type.equals("MANUAL")){
+                in = new Scanner(new FileReader(MANUAL_RESULTS));
+            }
+            else if(type.equals("RANDOM")){
+                in = new Scanner(new FileReader(RANDOM_RESULTS));
+            }
+            else{
+                System.out.println("[EXITING] buildConfusionMatrix(): unsupported run type: " + type);
+                System.exit(1);
+            }
+        }
+        catch(FileNotFoundException e){
+            System.out.println("[EXITING] File not found (Scanner): " + e);
+            System.exit(1);
+        }
+
+        int[][] matrix = new int[4][4]; //default initialized to all 0
+
+        while(in.hasNext()){
+            String line = in.next();
+            String[] fields = line.split(",");  //size 9
+
+
+            //TODO - Jeffrey - working on step 4
+
+        }
+
+
+
+
+
+
+
+
+        in.close();
+    }
+
     /* Checks if double d is greater than all three other doubles
     */
     private boolean greatestDouble(double d, double a, double b, double c){
