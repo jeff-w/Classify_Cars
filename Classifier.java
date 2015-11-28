@@ -12,7 +12,7 @@ Step 3      DONE
 Step 4      DONE
 Step 5      TODO    ***
 Step 6      TODO    ***
-Step 7      TODO    ***
+Step 7      DONE
 Step 8      TODO    ***
 */
 
@@ -21,8 +21,6 @@ import java.util.*;
 import java.io.*;
 
 public class Classifier {
-
-
 
     // Variables for manual text files
     private static final String MANUAL_TRAINING         = "train_manual_split.txt";     //356-1728
@@ -34,6 +32,12 @@ public class Classifier {
     private static final String RANDOM_TRAINING         = "train_random_split.txt";
     private static final String RANDOM_TESTING          = "test_random_split.txt";
     private static final String RANDOM_RESULTS          = "results_random_split.txt";
+
+    // Variables for one-hot encoded text files
+    private static final String MANUAL_OH_TRAINING      = "train_manual_onehot.txt";
+    private static final String MANUAL_OH_TESTING       = "test_manual_onehot.txt";
+    private static final String RANDOM_OH_TRAINING      = "train_random_onehot.txt";
+    private static final String RANDOM_OH_TESTING       = "test_random_onehot.txt";
 
     // Indices into our arrays (for classification values)
     private static final int CLASS_UNACC_INDEX          = 0;
@@ -248,7 +252,6 @@ public class Classifier {
             System.out.println(correct);
         }
 
-
         //cleanup
         in.close();
         out.close();
@@ -291,6 +294,161 @@ public class Classifier {
         return matrix;
     }
 
+    /* Does one-hot encoding on the input text files
+       This means instead of 6 features + 1 classification, we have
+       21 binary features + 1 classification
+
+       Output: 
+       two new text files, each line having 21 1s and 0s, followed by the classification
+    */
+    public void oneHotEncode(String type){
+        Scanner inTrain = null;
+        Scanner inTest = null;
+        PrintWriter outTrain = null;
+        PrintWriter outTest = null;
+        try{
+            if(type.equals("MANUAL")){
+                inTrain = new Scanner(new FileReader(MANUAL_TRAINING));
+                inTest = new Scanner(new FileReader(MANUAL_TESTING));
+                outTrain = new PrintWriter(MANUAL_OH_TRAINING, "UTF-8");
+                outTest = new PrintWriter(MANUAL_OH_TESTING, "UTF-8");
+            }
+            else if(type.equals("RANDOM")){
+                inTrain = new Scanner(new FileReader(RANDOM_TRAINING));
+                inTest = new Scanner(new FileReader(RANDOM_TESTING));
+                outTrain = new PrintWriter(RANDOM_OH_TRAINING, "UTF-8");
+                outTest = new PrintWriter(RANDOM_OH_TESTING, "UTF-8");
+            }
+            else{
+                System.out.println("[EXITING] oneHotEncode() function: unsupported run type: " + type);
+                System.exit(1);
+            }
+        }
+        catch(FileNotFoundException e){
+            System.out.println("[EXITING] File not found (Scanner): " + e);
+            System.exit(1);
+        }
+        catch(UnsupportedEncodingException e){
+            System.out.println("[EXITING] File not found (PrintWriter): " + e);
+            System.exit(1);
+        }
+
+        //create transformed training dataset
+        while(inTrain.hasNext()){
+            String line = inTrain.next();
+            String[] fields = line.split(",");  //size 7
+            String newLine = "";
+
+            //loop over all 6 attributes
+            for(int i = 0; i < 6; i++){
+                newLine += oneHotBinary(i, oneHotIndex(i, fields[i]));
+            }
+
+            //add the classification
+            newLine += fields[6];
+
+            //write to the transformed dataset
+            outTrain.println(newLine);
+        }
+
+        //create transformed test dataset
+        while(inTest.hasNext()){
+            String line = inTest.next();
+            String[] fields = line.split(",");  //size 7
+            String newLine = "";
+
+            //loop over all 6 attributes
+            for(int i = 0; i < 6; i++){
+                newLine += oneHotBinary(i, oneHotIndex(i, fields[i]));
+            }
+
+            //add the classification
+            newLine += fields[6];
+
+            //write to the transformed dataset
+            outTest.println(newLine);
+        }
+
+        //clean up
+        inTrain.close();
+        inTest.close();
+        outTrain.close();
+        outTest.close();
+    }
+
+    /* Maps values of the 6 attributes to integeres for one-hot encoding
+    */
+    private int oneHotIndex(int attr, String field){
+        switch(attr){
+            case 0: //buying
+                if (field.equals("vhigh"))      { return 0; }
+                else if (field.equals("high"))  { return 1; }
+                else if (field.equals("med"))   { return 2; }
+                else if (field.equals("low"))   { return 3; }
+                else                            { return -1; }
+            case 1: //maint
+                if (field.equals("vhigh"))      { return 0; }
+                else if (field.equals("high"))  { return 1; }
+                else if (field.equals("med"))   { return 2; }
+                else if (field.equals("low"))   { return 3; }
+                else                            { return -1; }
+            case 2: //doors
+                if (field.equals("2"))          { return 0; }
+                else if (field.equals("3"))     { return 1; }
+                else if (field.equals("4"))     { return 2; }
+                else if (field.equals("5more")) { return 3; }
+                else                            { return -1; }
+            case 3: //persons
+                if (field.equals("2"))          { return 0; }
+                else if (field.equals("4"))     { return 1; }
+                else if (field.equals("more"))  { return 2; }
+                else                            { return -1; }
+            case 4: //lug_boot
+                if (field.equals("small"))      { return 0; }
+                else if (field.equals("med"))   { return 1; }
+                else if (field.equals("big"))   { return 2; }
+                else                            { return -1; }
+            case 5: //safety
+                if (field.equals("low"))        { return 0; }
+                else if (field.equals("med"))   { return 1; }
+                else if (field.equals("high"))  { return 2; }
+                else                            { return -1; }
+            default:
+                return -1;     
+        }
+    }
+
+    /* Returns String of 1s and 0s (with commas) representing if the attribute is present
+    Example (buying high)
+    oneHotBinary(0, 1) --> "0,1,0,0,"
+    */
+    private String oneHotBinary(int attr, int index){
+        int numValues = -1;
+        if(attr == 0 || attr == 1 || attr == 2){
+            numValues = 4;
+        }
+        else if(attr == 3 || attr == 4 || attr == 5){
+            numValues = 3;
+        }
+        else{
+            System.out.println("[EXITING] oneHotBinary() attr value invalid");
+            System.exit(1);
+        }
+
+        String result = "";
+
+        for(int i = 0; i < numValues; i++){
+            if(i == index){
+                result += "1,";
+            }
+            else{
+                result += "0,";
+            }
+        }
+
+        return result;
+    }
+
     /* Checks if double d is greater than all three other doubles
     */
     private boolean greatestDouble(double d, double a, double b, double c){
@@ -328,38 +486,38 @@ public class Classifier {
     private int indexOfAttribute(int attr, String field){
         switch(attr){
             case 0: //buying
-                if (field.equals("vhigh")) { return ATTR_BUYING_VHIGH_INDEX; }
-                else if (field.equals("high")) { return ATTR_BUYING_HIGH_INDEX; }
-                else if (field.equals("med")) { return ATTR_BUYING_MED_INDEX; }
-                else if (field.equals("low")) { return ATTR_BUYING_LOW_INDEX; }
-                else { return -1; }
+                if (field.equals("vhigh"))      { return ATTR_BUYING_VHIGH_INDEX; }
+                else if (field.equals("high"))  { return ATTR_BUYING_HIGH_INDEX; }
+                else if (field.equals("med"))   { return ATTR_BUYING_MED_INDEX; }
+                else if (field.equals("low"))   { return ATTR_BUYING_LOW_INDEX; }
+                else                            { return -1; }
             case 1: //maint
-                if (field.equals("vhigh")) { return ATTR_MAINT_VHIGH_INDEX; }
-                else if (field.equals("high")) { return ATTR_MAINT_HIGH_INDEX; }
-                else if (field.equals("med")) { return ATTR_MAINT_MED_INDEX; }
-                else if (field.equals("low")) { return ATTR_MAINT_LOW_INDEX; }
-                else { return -1; }
+                if (field.equals("vhigh"))      { return ATTR_MAINT_VHIGH_INDEX; }
+                else if (field.equals("high"))  { return ATTR_MAINT_HIGH_INDEX; }
+                else if (field.equals("med"))   { return ATTR_MAINT_MED_INDEX; }
+                else if (field.equals("low"))   { return ATTR_MAINT_LOW_INDEX; }
+                else                            { return -1; }
             case 2: //doors
-                if (field.equals("2")) { return ATTR_DOORS_2_INDEX; }
-                else if (field.equals("3")) { return ATTR_DOORS_3_INDEX; }
-                else if (field.equals("4")) { return ATTR_DOORS_4_INDEX; }
+                if (field.equals("2"))          { return ATTR_DOORS_2_INDEX; }
+                else if (field.equals("3"))     { return ATTR_DOORS_3_INDEX; }
+                else if (field.equals("4"))     { return ATTR_DOORS_4_INDEX; }
                 else if (field.equals("5more")) { return ATTR_DOORS_5MORE_INDEX; }
-                else { return -1; }
+                else                            { return -1; }
             case 3: //persons
-                if (field.equals("2")) { return ATTR_PERSONS_2_INDEX; }
-                else if (field.equals("4")) { return ATTR_PERSONS_4_INDEX; }
-                else if (field.equals("more")) { return ATTR_PERSONS_MORE_INDEX; }
-                else { return -1; }
+                if (field.equals("2"))          { return ATTR_PERSONS_2_INDEX; }
+                else if (field.equals("4"))     { return ATTR_PERSONS_4_INDEX; }
+                else if (field.equals("more"))  { return ATTR_PERSONS_MORE_INDEX; }
+                else                            { return -1; }
             case 4: //lug_boot
-                if (field.equals("small")) { return ATTR_LUG_BOOT_SMALL_INDEX; }
-                else if (field.equals("med")) { return ATTR_LUG_BOOT_MED_INDEX; }
-                else if (field.equals("big")) { return ATTR_LUG_BOOT_BIG_INDEX; }
-                else { return -1; }
+                if (field.equals("small"))      { return ATTR_LUG_BOOT_SMALL_INDEX; }
+                else if (field.equals("med"))   { return ATTR_LUG_BOOT_MED_INDEX; }
+                else if (field.equals("big"))   { return ATTR_LUG_BOOT_BIG_INDEX; }
+                else                            { return -1; }
             case 5: //safety
-                if (field.equals("low")) { return ATTR_SAFETY_LOW_INDEX; }
-                else if (field.equals("med")) { return ATTR_SAFETY_MED_INDEX; }
-                else if (field.equals("high")) { return ATTR_SAFETY_HIGH_INDEX; }
-                else { return -1; }
+                if (field.equals("low"))        { return ATTR_SAFETY_LOW_INDEX; }
+                else if (field.equals("med"))   { return ATTR_SAFETY_MED_INDEX; }
+                else if (field.equals("high"))  { return ATTR_SAFETY_HIGH_INDEX; }
+                else                            { return -1; }
             default:
                 return -1;     
         }
