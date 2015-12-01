@@ -246,7 +246,7 @@ public class Classifier {
             out.println("," + correct);
             
             //write the results to terminal output
-            System.out.print(line + "\t\t");
+            System.out.format("%-40s", line);
             System.out.print(result + "\t");
             System.out.println(correct);
         }
