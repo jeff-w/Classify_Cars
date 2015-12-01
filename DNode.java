@@ -44,23 +44,23 @@ public class DNode {
 
 	public void print(Integer indent) {
 		// check if attribute exist, if not print out result and return because no more children 
-		if (!Boolean.parseBoolean(getAttribute())) {
-			printIndent(4);
+		if (getAttribute() == null) {
+			printIndent(indent);
 			System.out.print(getResult() + "\n");
 			return;
-		}
-		else {
+		} else {
 			printIndent(indent);
 
 			System.out.print(getAttribute() + "\n");
-
+			
 			for (Map.Entry<String, DNode> entry: children.entrySet()) {
-		      String value = entry.getKey();
-		      DNode  node = entry.getValue();
-		      printIndent(indent);
-		      System.out.print(value);
-		      node.print(value.length() + 4);
-		    }
+				String attribute_splitter = entry.getKey();//value
+				DNode node = entry.getValue();
+
+				printIndent(indent);
+				System.out.print("(" + attribute_splitter + ")\n");
+				node.print(attribute_splitter.length() + 6 + indent);
+			}
 		}
 
 		System.out.println();
