@@ -36,7 +36,7 @@ public class DNode {
 		return children;
 	}
 
-	public void printIndent(Integer indent) {
+/*	public void printIndent(Integer indent) {
 		for (Integer i = 0; i < indent; i ++) {
 			System.out.print(" ");
 		}
@@ -64,5 +64,60 @@ public class DNode {
 		}
 
 		System.out.println();
+	}
+*/
+	private String stringRepeat(String s, int n) {
+		String result = "";
+		for (int i = 0; i < n; i++)
+			result += s;
+		return result;
+	}
+
+	public void print(String indent, int split_length) {
+		// check if attribute exist, if not print out result and return because no more children 
+		
+		if (getAttribute() == null) {
+			System.out.print( stringRepeat("-", 2)
+					+ "> "
+					+ stringRepeat(".", getResult().length()+4)
+					+ " \n"
+					+ indent.substring(0, indent.length()-split_length)
+					+ stringRepeat(" ", split_length)
+					+ ". "
+					+ getResult()
+					+ " . \n"
+					+ indent.substring(0, indent.length()-split_length)
+					+ stringRepeat(" ", split_length)
+					+ stringRepeat("'",getResult().length()+4)
+					+ "\n"
+					+ indent.substring(0, indent.length()-split_length)
+					+ "\n");
+			return;
+		} else {
+			if (split_length > 0){
+				System.out.print(stringRepeat("-", 2));
+				System.out.print("> ");
+			}
+
+			System.out.print(getAttribute() + "\n");
+			
+			int kids_left = children.size();
+			for (Map.Entry<String, DNode> entry: children.entrySet()) {
+				String attribute_splitter = entry.getKey();
+				DNode node = entry.getValue();
+
+				System.out.print(indent);
+				System.out.print("(" + attribute_splitter + ")");
+				if (kids_left < 2){
+					node.print(indent + " " + stringRepeat(" ", (attribute_splitter.length() + 5)),
+							attribute_splitter.length() + 5);
+				} else {
+					node.print(indent + "|" + stringRepeat(" ", (attribute_splitter.length() + 5)),
+							attribute_splitter.length() + 5);
+				}
+				kids_left--;
+			}
+		}
+
 	}
 }
