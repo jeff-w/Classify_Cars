@@ -65,10 +65,11 @@ public class Classifier {
     private double[] classificationPriorProbabilities   = new double[NUM_CLASSIFICATIONS];
     protected int[][] jointCounts;
     protected double[][] likelihoods;
+    private String[] trainingLines;
 
     public Classifier() {
     	jointCounts = new int[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
-	likelihoods = new double[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
+        likelihoods = new double[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
     	for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
     		for (int j = 0; j < NUM_CLASSIFICATIONS; j++) {
     			jointCounts[i][j] = 1; // Initialize with add-one smoothing
@@ -82,6 +83,7 @@ public class Classifier {
 			String line = null;
 			int attributeIndex;
 			int classificationIndex;
+            ArrayList<String> list = new ArrayList<String>();
 			while ((line = reader.readLine()) != null) {
 				String[] values = line.split(",", -1);
              			classificationIndex = indexOfClassification(values[NUM_ATTRIBUTES]);
@@ -90,8 +92,10 @@ public class Classifier {
 					attributeIndex = indexOfAttribute(i, values[i]);
 					jointCounts[attributeIndex][classificationIndex]++;
 				}
-                		numDataPoints++;
+                list.add(line);
+                numDataPoints++;
 			}
+            trainingLines = list.toArray(new String[list.size()]);
 			reader.close();
 
     	} catch (FileNotFoundException e) {
@@ -244,9 +248,9 @@ public class Classifier {
         }
     }
 
-    public DNode giniDecide(String[] lines) {
+    public DNode giniDecide() {
         String[] attributes = {"buying", "maint", "doors", "persons", "lug_boot", "safety"};
-        return giniDecide(lines, attributes);
+        return giniDecide(trainingLines, attributes);
     }
 
     private String giniBestClass(String[] lines){
@@ -279,11 +283,18 @@ public class Classifier {
             return new DNode(null, giniBestClass(lines));
         }
 
+        for(int i = 0; i < attributes.length; i++){
+            System.out.println(attributes[i]);
+        }
+
         double lowestGiniSplit = Double.MAX_VALUE;
         String bestAttribute = null;
 
         for (String attribute : attributes) {
             double curGiniSplit = giniSplit(lines, attribute);
+
+            System.out.println(curGiniSplit);
+
             if (curGiniSplit < lowestGiniSplit) {
                 lowestGiniSplit = curGiniSplit;
                 bestAttribute = attribute;
@@ -336,9 +347,15 @@ public class Classifier {
     }
 
     private String[] arraySubtract(String[] attributes, String attributeToSubtract) {
-        Set<String> set = new HashSet<String>(Arrays.asList(attributes));
-        set.remove(attributeToSubtract);
-        return (String[]) set.toArray();
+        ArrayList<String> list = new ArrayList<String>();
+
+        for(String attribute : attributes){
+            if(!attribute.equals(attributeToSubtract)){
+                list.add(attribute);
+            }
+        }
+
+        return list.toArray(new String[list.size()]);
     }
 
     private int[] giniGetClassCounts(String[] lines){
@@ -385,63 +402,71 @@ public class Classifier {
     /* computes gini split for a particular attribute
     */
     private double giniSplit(String[] lines, String attribute){
+        System.out.println("numLines: " + lines.length);
+        if (lines.length < 200) {
+            for (String line : lines) {
+                System.out.println(line);
+            }
+        }
+        double ret;
         if(attribute.equals("buying")){
             String[] n1Lines = subLines(lines, attribute, "vhigh");
             String[] n2Lines = subLines(lines, attribute, "high");
             String[] n3Lines = subLines(lines, attribute, "med");
             String[] n4Lines = subLines(lines, attribute, "low");
-            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
                     +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
                     +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
         }
-        if(attribute.equals("maint")){
+        else if(attribute.equals("maint")){
             String[] n1Lines = subLines(lines, attribute, "vhigh");
             String[] n2Lines = subLines(lines, attribute, "high");
             String[] n3Lines = subLines(lines, attribute, "med");
             String[] n4Lines = subLines(lines, attribute, "low");
-            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
                     +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
                     +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
         }
-        if(attribute.equals("doors")){
+        else if(attribute.equals("doors")){
             String[] n1Lines = subLines(lines, attribute, "2");
             String[] n2Lines = subLines(lines, attribute, "3");
             String[] n3Lines = subLines(lines, attribute, "4");
             String[] n4Lines = subLines(lines, attribute, "5more");
-            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
                     +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
                     +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
         }
-        if(attribute.equals("persons")){
+        else if(attribute.equals("persons")){
             String[] n1Lines = subLines(lines, attribute, "2");
             String[] n2Lines = subLines(lines, attribute, "4");
             String[] n3Lines = subLines(lines, attribute, "more");
-            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
                     +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
         }
-        if(attribute.equals("lug_boot")){
+        else if(attribute.equals("lug_boot")){
             String[] n1Lines = subLines(lines, attribute, "small");
             String[] n2Lines = subLines(lines, attribute, "med");
             String[] n3Lines = subLines(lines, attribute, "big");
-            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
                     +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
         }
-        if(attribute.equals("safety")){
+        else if(attribute.equals("safety")){
             String[] n1Lines = subLines(lines, attribute, "low");
             String[] n2Lines = subLines(lines, attribute, "med");
             String[] n3Lines = subLines(lines, attribute, "high");
-            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
                     +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
         }
         else{
-            return 0.0;
+             ret = -1;
         }
+        return ret;
     }
 
     /* Subset of lines
@@ -455,8 +480,10 @@ public class Classifier {
             }
         }
 
+        //System.out.println(attribute + " " + attributeValue + " " + list.size());
+
         //make it back to String[]
-        return (String[])list.toArray();
+        return list.toArray(new String[list.size()]);
     }
 
     /* Checks if double d is greater than all three other doubles
