@@ -248,6 +248,24 @@ public class Classifier {
         }
     }
 
+    /* Checks if the classification of every line is the same
+    */
+    private boolean pureGini(String[] lines){
+        if(lines.length == 0){
+            return true;
+        }
+
+        String classification = lines[0].split(",")[6];
+
+        for(String line : lines){
+            if(!classification.equals(line.split(",")[6])){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public DNode giniDecide() {
         String[] attributes = {"buying", "maint", "doors", "persons", "lug_boot", "safety"};
         return giniDecide(trainingLines, attributes);
@@ -279,10 +297,20 @@ public class Classifier {
     }
 
     private DNode giniDecide(String[] lines, String[] attributes) {
-        System.out.println("giniDecide has " + lines.length + " lines");
+        if(lines.length == 0){
+            return null;
+        }
 
+        //System.out.println("giniDecide has " + lines.length + " lines");
+
+        //majority voting when went through all attributes
         if(attributes.length == 0){
             return new DNode(null, giniBestClass(lines));
+        }
+
+        //pure check - if pure, return a result node
+        if(pureGini(lines)){
+            return new DNode(null, lines[0].split(",")[6]);
         }
 
         for(int i = 0; i < attributes.length; i++){
@@ -417,7 +445,7 @@ public class Classifier {
             System.out.println("-------------");
         }
 
-        System.out.println("numLines: " + lines.length);
+        //System.out.println("numLines: " + lines.length);
 
         // if (lines.length < 200) {
         //     for (String line : lines) {
