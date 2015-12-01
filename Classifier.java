@@ -178,7 +178,7 @@ public class Classifier {
             if(greatestDouble(pGood, pUnacc, pAcc, pVgood)){ result = "good";   }
             if(greatestDouble(pVgood, pUnacc, pAcc, pGood)){ result = "vgood";  }
 
-            String correct = result.equals(fields[6]) ? "yes" : "no";
+            String correct = result.equals(fields[NUM_ATTRIBUTES]) ? "yes" : "no";
                 
             //write the new file with results
             out.print(line);
@@ -186,7 +186,7 @@ public class Classifier {
             out.println("," + correct);
             
             //write the results to terminal output
-            System.out.format("%-40s", line);
+            System.out.format("%-50s", line);
             System.out.print(result + "\t");
             System.out.println(correct);
         }
