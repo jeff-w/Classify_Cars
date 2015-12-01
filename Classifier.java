@@ -574,5 +574,21 @@ public class Classifier {
         System.out.println("Step4-----------------------------------------------");
         c.printConfusionMatrix(c.buildConfusionMatrix("RANDOM"));
         System.out.println("----------------------------------------------------");
+
+        System.out.println("Step5-----------------------------------------------");
+        
+        System.out.println("----------------------------------------------------");
+
+        System.out.println("Step6-----------------------------------------------");
+        
+        System.out.println("----------------------------------------------------");
+
+        System.out.println("Step7-----------------------------------------------");
+        c.oneHotEncode("RANDOM");
+        System.out.println("----------------------------------------------------");
+
+        System.out.println("Step8-----------------------------------------------");
+        
+        System.out.println("----------------------------------------------------");
     }
 }
