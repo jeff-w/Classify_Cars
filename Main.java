@@ -111,7 +111,7 @@ public class Main {
                 System.exit(1);
             }
         }
-	catch(FileNotFoundException e){
+        catch(FileNotFoundException e){
             System.out.println("[EXITING] File not found (Scanner): " + e);
             System.exit(1);
         }

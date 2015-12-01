@@ -26,7 +26,7 @@ public class Classifier {
     private static final int CLASS_ACC_INDEX            = 1;
     private static final int CLASS_GOOD_INDEX           = 2;
     private static final int CLASS_VGOOD_INDEX          = 3;
-    protected final int NUM_CLASSIFICATIONS        = 4;
+    protected final int NUM_CLASSIFICATIONS             = 4;
     
     // Indices into our arrays (for attribute names)
     private static final int ATTR_BUYING_INDEX          = 0;
@@ -34,7 +34,7 @@ public class Classifier {
     private static final int ATTR_DOORS_INDEX           = 2;
     private static final int ATTR_PERSONS_INDEX         = 3;
     private static final int ATTR_SAFETY_INDEX          = 5;
-    protected int NUM_ATTRIBUTES             = 6;
+    protected int NUM_ATTRIBUTES                        = 6;
     
     // Indices into our arrays (for attribute values)
     private static final int ATTR_BUYING_VHIGH_INDEX    = 0;
@@ -58,7 +58,7 @@ public class Classifier {
     private static final int ATTR_SAFETY_LOW_INDEX      = 18;
     private static final int ATTR_SAFETY_MED_INDEX      = 19;
     private static final int ATTR_SAFETY_HIGH_INDEX     = 20; 
-    protected int NUM_ATTRIBUTE_VALUES       = 21;
+    protected int NUM_ATTRIBUTE_VALUES                  = 21;
 
     private int numDataPoints                           = 0;
     private int[] classificationCounts                  = new int[NUM_CLASSIFICATIONS];
