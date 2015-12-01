@@ -324,6 +324,13 @@ public class Classifier {
             double curGiniSplit = giniSplit(lines, attribute);
 
             System.out.println(curGiniSplit);
+            if(Double.isNaN(curGiniSplit)){
+                System.out.println("------" + lines.length + " " + attributes.length);
+                for(String l : lines){
+                    System.out.println(l);
+                }
+                System.out.println("~~~~~~~~~~~~~~~~");
+            }
 
             if (curGiniSplit < lowestGiniSplit) {
                 lowestGiniSplit = curGiniSplit;
@@ -421,6 +428,10 @@ public class Classifier {
     /* lines should only have the particular attribute value (ex Maint=vhigh)
     */
     private double gini(String[] lines){
+        if(lines.length == 0){
+            return 0.0;
+        }
+
         int[] classCounts = giniGetClassCounts(lines);
         int numLines = lines.length;
 
@@ -463,6 +474,18 @@ public class Classifier {
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
                     +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
 
+            if(lines.length == 12){
+                System.out.println("wtf!!!!!!!!!!!!!!!!!");
+                System.out.println("ret is " + ret);
+                System.out.println(n1Lines.length);
+                System.out.println(n2Lines.length);
+                System.out.println(n3Lines.length);
+                System.out.println(n4Lines.length);
+                System.out.println("$$$$$$$$$$$$$$$$");
+                System.out.println(gini(n1Lines));
+                System.out.println((n1Lines.length/(double)lines.length));
+                System.out.println("***************************");
+            }
 
             if(lines.length == 457 && attribute.equals("buying")){
                 System.out.println(n1Lines.length + " " + n2Lines.length + " " + n3Lines.length + n4Lines.length);
