@@ -1,6 +1,5 @@
 import java.util.*;
 import java.io.*;
-
 /*
  * DNode - a node of a decision tree
  */
@@ -13,7 +12,7 @@ public class DNode {
 	private String result;
 	
 	// Maps an attribute value to a child DNode.
-	private HashMap<String, DNode> children = new HashMap<String, DNode>();
+	private Map<String, DNode> children = new HashMap<String, DNode>();
 
 	public DNode(String attribute, String result) {
 		this.attribute = attribute;
@@ -33,7 +32,7 @@ public class DNode {
 		return result;
 	}
 
-	public HashMap<String, DNode> getChildren() {
+	public Map<String, DNode> getChildren() {
 		return children;
 	}
 
@@ -55,7 +54,7 @@ public class DNode {
 
 			System.out.print(getAttribute() + "\n");
 
-			for (HashMap.Entry<String, DNode> entry: children.entrySet()) {
+			for (Map.Entry<String, DNode> entry: children.entrySet()) {
 		      String value = entry.getKey();
 		      DNode  node = entry.getValue();
 		      printIndent(indent);
