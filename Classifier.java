@@ -246,7 +246,7 @@ public class Classifier {
             out.println("," + correct);
             
             //write the results to terminal output
-            System.out.print(line + "\t\t");
+            System.out.format("%-40s", line);
             System.out.print(result + "\t");
             System.out.println(correct);
         }
@@ -562,31 +562,33 @@ public class Classifier {
 
         System.out.println("Step1-----------------------------------------------");
         c.randomSplit();
-        System.out.println("----------------------------------------------------");
+        System.out.println("DONE");
+        System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step2-----------------------------------------------");
         c.train(RANDOM_TRAINING);
-        System.out.println("----------------------------------------------------");
+        System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step3-----------------------------------------------");
         c.test("RANDOM");
-        System.out.println("----------------------------------------------------");
+        System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step4-----------------------------------------------");
         c.printConfusionMatrix(c.buildConfusionMatrix("RANDOM"));
-        System.out.println("----------------------------------------------------");
+        System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step5-----------------------------------------------");
         
-        System.out.println("----------------------------------------------------");
+        System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step6-----------------------------------------------");
         
-        System.out.println("----------------------------------------------------");
+        System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step7-----------------------------------------------");
         c.oneHotEncode("RANDOM");
-        System.out.println("----------------------------------------------------");
+        System.out.println("DONE");
+        System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step8-----------------------------------------------");
         
@@ -596,5 +598,6 @@ public class Classifier {
         ohc.train(RANDOM_OH_TRAINING);
         ohc.test("RANDOM");
         ohc.printConfusionMatrix(ohc.buildConfusionMatrix("RANDOM"));
+        System.out.println("----------------------------------------------------\n");
     }
 }
