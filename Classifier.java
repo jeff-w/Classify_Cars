@@ -14,7 +14,7 @@ import java.lang.*;
 public class Classifier {
 
     // Variables for manual text files
-    protected  String MANUAL_TESTING          = "test_manual_split.txt";      //1-355
+    protected String MANUAL_TESTING          = "test_manual_split.txt";      //1-355
     protected String MANUAL_RESULTS          = "results_manual_split.txt";
 
     // Variables for random text files
@@ -249,13 +249,99 @@ public class Classifier {
         return giniDecide(lines, attributes);
     }
 
+    private String giniBestClass(String[] lines){
+        int[] classCounts = giniGetClassCounts(lines);
+        String bestClass = null;
+        int maxCount = 0;
+
+        if(classCounts[0] > maxCount){
+            maxCount = classCounts[0];
+            bestClass = "unacc";
+        }
+        if(classCounts[1] > maxCount){
+            maxCount = classCounts[1];
+            bestClass = "acc";
+        }
+        if(classCounts[2] > maxCount){
+            maxCount = classCounts[2];
+            bestClass = "good";
+        }
+        if(classCounts[3] > maxCount){
+            maxCount = classCounts[3];
+            bestClass = "vgood";
+        }
+
+        return bestClass;
+    }
+
     private DNode giniDecide(String[] lines, String[] attributes) {
+        if(attributes.length == 0){
+            return new DNode(null, giniBestClass(lines));
+        }
+
+        double lowestGiniSplit = Double.MAX_VALUE;
+        String bestAttribute = null;
+
+        for (String attribute : attributes) {
+            double curGiniSplit = giniSplit(lines, attribute);
+            if (curGiniSplit < lowestGiniSplit) {
+                lowestGiniSplit = curGiniSplit;
+                bestAttribute = attribute;
+            }
+        }
+
+        DNode node = new DNode(bestAttribute, null);
+        String[] subtractedArray = arraySubtract(attributes, bestAttribute);
+
+        if (bestAttribute.equals("buying")) {
+            return node
+                .addChild("vhigh", giniDecide(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
+                .addChild("high", giniDecide(subLines(lines, bestAttribute, "high"), subtractedArray))
+                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("low", giniDecide(subLines(lines, bestAttribute, "low"), subtractedArray));
+        }
+        if (bestAttribute.equals("maint")) {
+            return node
+                .addChild("vhigh", giniDecide(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
+                .addChild("high", giniDecide(subLines(lines, bestAttribute, "high"), subtractedArray))
+                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("low", giniDecide(subLines(lines, bestAttribute, "low"), subtractedArray));
+        }
+        if (bestAttribute.equals("doors")) {
+            return node
+                .addChild("2", giniDecide(subLines(lines, bestAttribute, "2"), subtractedArray))
+                .addChild("3", giniDecide(subLines(lines, bestAttribute, "3"), subtractedArray))
+                .addChild("4", giniDecide(subLines(lines, bestAttribute, "4"), subtractedArray))
+                .addChild("5more", giniDecide(subLines(lines, bestAttribute, "5more"), subtractedArray));
+        }
+        if (bestAttribute.equals("persons")) {
+            return node
+                .addChild("2", giniDecide(subLines(lines, bestAttribute, "2"), subtractedArray))
+                .addChild("4", giniDecide(subLines(lines, bestAttribute, "4"), subtractedArray))
+                .addChild("more", giniDecide(subLines(lines, bestAttribute, "more"), subtractedArray));
+        }
+        if (bestAttribute.equals("lug_boot")) {
+            return node
+                .addChild("small", giniDecide(subLines(lines, bestAttribute, "small"), subtractedArray))
+                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("big", giniDecide(subLines(lines, bestAttribute, "big"), subtractedArray));
+        }
+        if (bestAttribute.equals("safety")) {
+            return node
+                .addChild("low", giniDecide(subLines(lines, bestAttribute, "low"), subtractedArray))
+                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("high", giniDecide(subLines(lines, bestAttribute, "high"), subtractedArray));
+        }
         return null;
     }
 
-    /* lines should only have the particular attribute value (ex Maint=vhigh)
-    */
-    private double gini(String[] lines){
+    private String[] arraySubtract(String[] attributes, String attributeToSubtract) {
+        Set<String> set = new HashSet<String>(Arrays.asList(attributes));
+        set.remove(attributeToSubtract);
+        return (String[]) set.toArray();
+    }
+
+    private int[] giniGetClassCounts(String[] lines){
         int nUnacc = 0;
         int nAcc = 0;
         int nGood = 0;
@@ -279,11 +365,21 @@ public class Classifier {
             }
         }
 
+        int ret[] = {nUnacc, nAcc, nGood, nVgood};
+        return ret;
+    }
+
+    /* lines should only have the particular attribute value (ex Maint=vhigh)
+    */
+    private double gini(String[] lines){
+        int[] classCounts = giniGetClassCounts(lines);
+        int numLines = lines.length;
+
         return 1 
-            - Math.pow(((double)nUnacc/numLines), 2)
-            - Math.pow(((double)nAcc/numLines), 2) 
-            - Math.pow(((double)nGood/numLines), 2) 
-            - Math.pow(((double)nVgood/numLines), 2);
+            - Math.pow(((double)classCounts[0]/numLines), 2)
+            - Math.pow(((double)classCounts[1]/numLines), 2) 
+            - Math.pow(((double)classCounts[2]/numLines), 2) 
+            - Math.pow(((double)classCounts[3]/numLines), 2);
     }
 
     /* computes gini split for a particular attribute
@@ -469,5 +565,4 @@ public class Classifier {
             return -1;
         }
     }
-
 }
