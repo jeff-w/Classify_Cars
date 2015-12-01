@@ -7,9 +7,9 @@
 
 /*
 Step 1      DONE    TESTED
-Step 2      DONE    
-Step 3      DONE 
-Step 4      DONE 
+Step 2      DONE    TESTED
+Step 3      DONE    TESTED
+Step 4      DONE    TESTED
 Step 5      TODO    ***
 Step 6      TODO    ***
 Step 7      DONE
