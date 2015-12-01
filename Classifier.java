@@ -301,8 +301,6 @@ public class Classifier {
             return null;
         }
 
-        //System.out.println("giniDecide has " + lines.length + " lines");
-
         //majority voting when went through all attributes
         if(attributes.length == 0){
             return new DNode(null, giniBestClass(lines));
@@ -313,32 +311,17 @@ public class Classifier {
             return new DNode(null, lines[0].split(",")[6]);
         }
 
-        for(int i = 0; i < attributes.length; i++){
-            System.out.println(attributes[i]);
-        }
-
         double lowestGiniSplit = Double.MAX_VALUE;
         String bestAttribute = null;
 
         for (String attribute : attributes) {
             double curGiniSplit = giniSplit(lines, attribute);
 
-            System.out.println(curGiniSplit);
-            if(Double.isNaN(curGiniSplit)){
-                System.out.println("------" + lines.length + " " + attributes.length);
-                for(String l : lines){
-                    System.out.println(l);
-                }
-                System.out.println("~~~~~~~~~~~~~~~~");
-            }
-
             if (curGiniSplit < lowestGiniSplit) {
                 lowestGiniSplit = curGiniSplit;
                 bestAttribute = attribute;
             }
         }
-
-        System.out.println("about to split on " + bestAttribute);
 
         DNode node = new DNode(bestAttribute, null);
         String[] subtractedArray = arraySubtract(attributes, bestAttribute);
@@ -435,10 +418,6 @@ public class Classifier {
         int[] classCounts = giniGetClassCounts(lines);
         int numLines = lines.length;
 
-        //problem: one of classcounts may be equal to numLines (pure classification) so this ret 0
-        //example: everything is unacc (pure classification) so this function returns 0
-        //happens alot because so many entries are "unacc"
-
         return 1 
             - Math.pow(((double)classCounts[0]/numLines), 2)
             - Math.pow(((double)classCounts[1]/numLines), 2) 
@@ -449,20 +428,6 @@ public class Classifier {
     /* computes gini split for a particular attribute
     */
     private double giniSplit(String[] lines, String attribute){
-        if(lines.length == 457 && attribute.equals("buying")){
-            System.out.println("----------457 buying");
-            for(String line : lines)
-                System.out.println(line);
-            System.out.println("-------------");
-        }
-
-        //System.out.println("numLines: " + lines.length);
-
-        // if (lines.length < 200) {
-        //     for (String line : lines) {
-        //         System.out.println(line);
-        //     }
-        // }
         double ret;
         if(attribute.equals("buying")){
             String[] n1Lines = subLines(lines, attribute, "vhigh");
@@ -473,32 +438,6 @@ public class Classifier {
                     +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
                     +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
                     +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
-
-            if(lines.length == 12){
-                System.out.println("wtf!!!!!!!!!!!!!!!!!");
-                System.out.println("ret is " + ret);
-                System.out.println(n1Lines.length);
-                System.out.println(n2Lines.length);
-                System.out.println(n3Lines.length);
-                System.out.println(n4Lines.length);
-                System.out.println("$$$$$$$$$$$$$$$$");
-                System.out.println(gini(n1Lines));
-                System.out.println((n1Lines.length/(double)lines.length));
-                System.out.println("***************************");
-            }
-
-            if(lines.length == 457 && attribute.equals("buying")){
-                System.out.println(n1Lines.length + " " + n2Lines.length + " " + n3Lines.length + n4Lines.length);
-                System.out.println(gini(n1Lines));
-                System.out.println(gini(n2Lines));
-                System.out.println(gini(n3Lines));
-                System.out.println(gini(n4Lines));
-                System.out.println("```````````````````````````````````````");
-
-                for(String line : n1Lines)
-                    System.out.println(line);
-                System.out.println("```````````````````````````````````````");
-            }
         }
         else if(attribute.equals("maint")){
             String[] n1Lines = subLines(lines, attribute, "vhigh");
@@ -560,8 +499,6 @@ public class Classifier {
                 list.add(line);
             }
         }
-
-        //System.out.println(attribute + " " + attributeValue + " " + list.size());
 
         //make it back to String[]
         return list.toArray(new String[list.size()]);
