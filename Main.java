@@ -263,7 +263,8 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step5-----------------------------------------------");
-        
+        DNode node = c.giniDecide();
+        node.print(0);
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step6-----------------------------------------------");
