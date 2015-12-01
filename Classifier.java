@@ -6,10 +6,10 @@
  */
 
 /*
-Step 1      DONE
-Step 2      DONE
-Step 3      DONE
-Step 4      DONE
+Step 1      DONE    TESTED
+Step 2      DONE    
+Step 3      DONE 
+Step 4      DONE 
 Step 5      TODO    ***
 Step 6      TODO    ***
 Step 7      DONE
@@ -247,7 +247,7 @@ public class Classifier {
             out.println("," + correct);
             
             //write the results to terminal output
-            System.out.print(line + "\t");
+            System.out.print(line + "\t\t");
             System.out.print(result + "\t");
             System.out.println(correct);
         }
@@ -292,6 +292,17 @@ public class Classifier {
         in.close();
 
         return matrix;
+    }
+
+    /* Prints out the confusion matrix
+    */
+    public void printConfusionMatrix(int[][] matrix){
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                System.out.print(matrix[i][j] + "\t");
+            }
+            System.out.println();
+        }
     }
 
     /* Does one-hot encoding on the input text files
@@ -547,13 +558,22 @@ public class Classifier {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args.length < 1) {
-            System.err.println("No file specified.");
-        
-        } else {
-            Classifier classifier = new Classifier();
-            classifier.train(args[0]);
-            System.err.println("Training complete.");
-        }
+        Classifier c = new Classifier();
+
+        System.out.println("Step1-----------------------------------------------");
+        c.randomSplit();
+        System.out.println("----------------------------------------------------");
+
+        System.out.println("Step2-----------------------------------------------");
+        c.train(RANDOM_TRAINING);
+        System.out.println("----------------------------------------------------");
+
+        System.out.println("Step3-----------------------------------------------");
+        c.test("RANDOM");
+        System.out.println("----------------------------------------------------");
+
+        System.out.println("Step4-----------------------------------------------");
+        c.printConfusionMatrix(c.buildConfusionMatrix("RANDOM"));
+        System.out.println("----------------------------------------------------");
     }
 }
