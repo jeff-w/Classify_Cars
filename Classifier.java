@@ -558,6 +558,7 @@ public class Classifier {
      */
     public static void main(String[] args) {
         Classifier c = new Classifier();
+        OH_Classifier ohc = new OH_Classifier();
 
         System.out.println("Step1-----------------------------------------------");
         c.randomSplit();
@@ -590,5 +591,10 @@ public class Classifier {
         System.out.println("Step8-----------------------------------------------");
         
         System.out.println("----------------------------------------------------");
+
+
+        ohc.train(RANDOM_OH_TRAINING);
+        ohc.test("RANDOM");
+        ohc.printConfusionMatrix(ohc.buildConfusionMatrix("RANDOM"));
     }
 }
