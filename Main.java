@@ -241,7 +241,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-	    
+	   ///* 
 	Main self = new Main();
         Classifier c = new Classifier();
         OneHot_Classifier ohc = new OneHot_Classifier();
@@ -265,7 +265,7 @@ public class Main {
 
         System.out.println("Step5-----------------------------------------------");
         DNode node = c.giniDecide();
-        node.print(0);
+        node.print("", 0);
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step6-----------------------------------------------");
@@ -286,9 +286,9 @@ public class Main {
         ohc.test("RANDOM");
         ohc.printConfusionMatrix(ohc.buildConfusionMatrix("RANDOM"));
         System.out.println("----------------------------------------------------\n");
-	
+//	*/
 	    //PRINT DECISION TREE TEST
-	    /*
+/*	    
 	    DNode age = new DNode("Age", null);
 	    DNode gender = new DNode("Gender", null);
 	    DNode height = new DNode("Height", null);
@@ -302,6 +302,7 @@ public class Main {
 	    height.addChild(">6", yes);
 	    height.addChild("<=6", no);
 
-	    age.print(0);*/
+	    age.print("",0);
+*/
     }
 }
