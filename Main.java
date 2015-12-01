@@ -252,15 +252,15 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step2-----------------------------------------------");
-        c.train(RANDOM_TRAINING);
+        c.train(MANUAL_TRAINING);
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step3-----------------------------------------------");
-        c.test("RANDOM");
+        c.test("MANUAL");
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step4-----------------------------------------------");
-        c.printConfusionMatrix(c.buildConfusionMatrix("RANDOM"));
+        c.printConfusionMatrix(c.buildConfusionMatrix("MANUAL"));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step5-----------------------------------------------");
@@ -273,7 +273,7 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step7-----------------------------------------------");
-        self.oneHotEncode("RANDOM");
+        self.oneHotEncode("MANUAL");
         System.out.println("DONE");
         System.out.println("----------------------------------------------------\n");
 
