@@ -19,6 +19,8 @@ Step 8      TODO    ***
 /*IMPORTS*/
 import java.util.*;
 import java.io.*;
+import java.lang.*;
+import DNode;
 
 public class Classifier {
 
@@ -386,6 +388,128 @@ public class Classifier {
         outTest.close();
     }
 
+    public DNode giniDecide(String[] lines) {
+        String[] attributes = {"buying", "maint", "doors", "persons", "lug_boot", "safety"};
+        return giniDecide(lines, attributes);
+    }
+
+    private DNode giniDecide(String[] lines, String[] attributes) {
+        return null;
+    }
+
+
+
+
+    /* lines should only have the particular attribute value (ex Maint=vhigh)
+    */
+    private double gini(String[] lines){
+        int nUnacc = 0;
+        int nAcc = 0;
+        int nGood = 0;
+        int nVgood = 0;
+        int numLines = lines.length;
+
+        for(int i = 0; i < numLines; i++){
+            String classification = lines[i].split(",")[NUM_ATTRIBUTES];
+
+            if(classification.equals("unacc")){
+                nUnacc++;
+            }
+            if(classification.equals("acc")){
+                nAcc++;
+            }
+            if(classification.equals("good")){
+                nGood++;
+            }
+            if(classification.equals("vgood")){
+                nVgood++;
+            }
+        }
+
+        return 1 
+            - Math.pow(((double)nUnacc/numLines), 2)
+            - Math.pow(((double)nAcc/numLines), 2) 
+            - Math.pow(((double)nGood/numLines), 2) 
+            - Math.pow(((double)nVgood/numLines), 2);
+    }
+
+    /* computes gini split for a particular attribute
+    */
+    private double giniSplit(String[] lines, String attribute){
+        if(attribute.equals("buying")){
+            String[] n1Lines = subLines(lines, attribute, "vhigh");
+            String[] n2Lines = subLines(lines, attribute, "high");
+            String[] n3Lines = subLines(lines, attribute, "med");
+            String[] n4Lines = subLines(lines, attribute, "low");
+            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
+                    +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
+        }
+        if(attribute.equals("maint")){
+            String[] n1Lines = subLines(lines, attribute, "vhigh");
+            String[] n2Lines = subLines(lines, attribute, "high");
+            String[] n3Lines = subLines(lines, attribute, "med");
+            String[] n4Lines = subLines(lines, attribute, "low");
+            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
+                    +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
+        }
+        if(attribute.equals("doors")){
+            String[] n1Lines = subLines(lines, attribute, "2");
+            String[] n2Lines = subLines(lines, attribute, "3");
+            String[] n3Lines = subLines(lines, attribute, "4");
+            String[] n4Lines = subLines(lines, attribute, "5more");
+            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
+                    +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
+        }
+        if(attribute.equals("persons")){
+            String[] n1Lines = subLines(lines, attribute, "2");
+            String[] n2Lines = subLines(lines, attribute, "4");
+            String[] n3Lines = subLines(lines, attribute, "more");
+            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
+        }
+        if(attribute.equals("lug_boot")){
+            String[] n1Lines = subLines(lines, attribute, "small");
+            String[] n2Lines = subLines(lines, attribute, "med");
+            String[] n3Lines = subLines(lines, attribute, "big");
+            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
+        }
+        if(attribute.equals("safety")){
+            String[] n1Lines = subLines(lines, attribute, "low");
+            String[] n2Lines = subLines(lines, attribute, "med");
+            String[] n3Lines = subLines(lines, attribute, "high");
+            return      (n1Lines.length/(double)lines.length)*gini(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
+        }
+        else{
+            return 0.0;
+        }
+    }
+
+    /* Subset of lines
+    */
+    private String[] subLines(String[] lines, String attribute, String attributeValue){
+        ArrayList<String> list = new ArrayList<String>();
+
+        for(String line : lines){
+            if(line.split(",")[indexOfAttributeType(attribute)].equals(attributeValue)){
+                list.add(line);
+            }
+        }
+
+        //make it back to String[]
+        return (String[])list.toArray();
+    }
+
     /* Maps values of the 6 attributes to integeres for one-hot encoding
     */
     private int oneHotIndex(int attr, String field){
@@ -487,6 +611,19 @@ public class Classifier {
         if(type.equals("acc"))      { return 1; }
         if(type.equals("good"))     { return 2; }
         if(type.equals("vgood"))    { return 3; }
+
+        return -1;
+    }
+
+    /* duh
+    */
+    private int indexOfAttributeType(String attr){
+        if(attr.equals("buying"))   {return 0;}
+        if(attr.equals("maint"))    {return 1;}
+        if(attr.equals("doors"))    {return 2;}
+        if(attr.equals("persons"))  {return 3;}
+        if(attr.equals("lug_boot")) {return 4;}
+        if(attr.equals("safety"))   {return 5;}
 
         return -1;
     }
