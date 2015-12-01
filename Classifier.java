@@ -82,7 +82,6 @@ public class Classifier {
     private int[] attributeCounts                       = new int[21];
     private int[] classificationCounts                  = new int[4];
     private int[][] jointCounts                         = new int[21][4];
-    private double[] attributePriorProbabilities        = new double[21];
     private double[] classificationPriorProbabilities   = new double[4];
     private double[][] likelihoods                      = new double[21][4];
 
@@ -122,15 +121,15 @@ public class Classifier {
     }
 
     private void calculateProbabilities() {
-        for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
-            attributePriorProbabilities[i] = ((double) attributeCounts[i]) / ((double) numDataPoints);
-            for (int j = 0; j < NUM_CLASSIFICATIONS; j++) {
-                double jointProbability = ((double) jointCounts[i][j]) / ((double) numDataPoints);
-                likelihoods[i][j] = jointProbability / attributePriorProbabilities[i];
-            }
-        }
         for (int i = 0; i < NUM_CLASSIFICATIONS; i++) {
             classificationPriorProbabilities[i] = (double) classificationCounts[i] / numDataPoints;
+            System.out.println(classificationPriorProbabilities[i]);
+        }
+        for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
+            for (int j = 0; j < NUM_CLASSIFICATIONS; j++) {
+                double jointProbability = ((double) jointCounts[i][j]) / ((double) numDataPoints);
+                likelihoods[i][j] = jointProbability / classificationPriorProbabilities[j];
+            }
         }
     }
 
