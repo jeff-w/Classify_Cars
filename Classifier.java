@@ -334,12 +334,19 @@ public class Classifier {
         return true;
     }
 
-    public DNode createDecisionNode() {
+    public DNode createDecisionNode(boolean useGini) {
         String[] attributes = {"buying", "maint", "doors", "persons", "lug_boot", "safety"};
-        return createDecisionNode(trainingLines, attributes);
+        return createDecisionNode(trainingLines, attributes, useGini);
     }
 
-    private DNode createDecisionNode(String[] lines, String[] attributes) {
+    private DNode createDecisionNode(String[] lines, String[] attributes, boolean useGini) {
+        AttributeSelectionMeasurement measurement;
+        if (useGini) {
+            measurement = new Gini();
+        } else {
+            measurement = new InformationGain();
+        }
+
         if(lines.length == 0){
             return null;
         }
@@ -358,8 +365,7 @@ public class Classifier {
         String bestAttribute = null;
 
         for (String attribute : attributes) {
-            double curSplitValue = attributeSplit(lines, attribute, gini);
-
+            double curSplitValue = attributeSplit(lines, attribute, measurement);
             if (curSplitValue < bestSplitValue) {
                 bestSplitValue = curSplitValue;
                 bestAttribute = attribute;
@@ -371,42 +377,42 @@ public class Classifier {
 
         if (bestAttribute.equals("buying")) {
             return node
-                .addChild("vhigh", createDecisionNode(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
-                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray))
-                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray));
+                .addChild("vhigh", createDecisionNode(subLines(lines, bestAttribute, "vhigh"), subtractedArray, useGini))
+                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray, useGini))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray, useGini))
+                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray, useGini));
         }
         if (bestAttribute.equals("maint")) {
             return node
-                .addChild("vhigh", createDecisionNode(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
-                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray))
-                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray));
+                .addChild("vhigh", createDecisionNode(subLines(lines, bestAttribute, "vhigh"), subtractedArray, useGini))
+                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray, useGini))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray, useGini))
+                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray, useGini));
         }
         if (bestAttribute.equals("doors")) {
             return node
-                .addChild("2", createDecisionNode(subLines(lines, bestAttribute, "2"), subtractedArray))
-                .addChild("3", createDecisionNode(subLines(lines, bestAttribute, "3"), subtractedArray))
-                .addChild("4", createDecisionNode(subLines(lines, bestAttribute, "4"), subtractedArray))
-                .addChild("5more", createDecisionNode(subLines(lines, bestAttribute, "5more"), subtractedArray));
+                .addChild("2", createDecisionNode(subLines(lines, bestAttribute, "2"), subtractedArray, useGini))
+                .addChild("3", createDecisionNode(subLines(lines, bestAttribute, "3"), subtractedArray, useGini))
+                .addChild("4", createDecisionNode(subLines(lines, bestAttribute, "4"), subtractedArray, useGini))
+                .addChild("5more", createDecisionNode(subLines(lines, bestAttribute, "5more"), subtractedArray, useGini));
         }
         if (bestAttribute.equals("persons")) {
             return node
-                .addChild("2", createDecisionNode(subLines(lines, bestAttribute, "2"), subtractedArray))
-                .addChild("4", createDecisionNode(subLines(lines, bestAttribute, "4"), subtractedArray))
-                .addChild("more", createDecisionNode(subLines(lines, bestAttribute, "more"), subtractedArray));
+                .addChild("2", createDecisionNode(subLines(lines, bestAttribute, "2"), subtractedArray, useGini))
+                .addChild("4", createDecisionNode(subLines(lines, bestAttribute, "4"), subtractedArray, useGini))
+                .addChild("more", createDecisionNode(subLines(lines, bestAttribute, "more"), subtractedArray, useGini));
         }
         if (bestAttribute.equals("lug_boot")) {
             return node
-                .addChild("small", createDecisionNode(subLines(lines, bestAttribute, "small"), subtractedArray))
-                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("big", createDecisionNode(subLines(lines, bestAttribute, "big"), subtractedArray));
+                .addChild("small", createDecisionNode(subLines(lines, bestAttribute, "small"), subtractedArray, useGini))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray, useGini))
+                .addChild("big", createDecisionNode(subLines(lines, bestAttribute, "big"), subtractedArray, useGini));
         }
         if (bestAttribute.equals("safety")) {
             return node
-                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray))
-                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray));
+                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray, useGini))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray, useGini))
+                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray, useGini));
         }
         return null;
     }
