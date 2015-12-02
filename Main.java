@@ -81,7 +81,7 @@ public class Main {
         outTest.close();
     }
 
-        /* Does one-hot encoding on the input text files
+    /* Does one-hot encoding on the input text files
        This means instead of 6 features + 1 classification, we have
        21 binary features + 1 classification
 
