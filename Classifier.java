@@ -66,6 +66,8 @@ public class Classifier {
     protected int[][] jointCounts;
     protected double[][] likelihoods;
     private String[] trainingLines;
+    private Gini gini;
+    private InformationGain ig;
 
     public Classifier() {
     	jointCounts = new int[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
@@ -75,6 +77,8 @@ public class Classifier {
     			jointCounts[i][j] = 1; // Initialize with add-one smoothing
     		}
     	}
+        gini = new Gini();
+        ig = new InformationGain();
     }
 
     private void loadCountsFromFile(String filename) {
@@ -250,7 +254,7 @@ public class Classifier {
 
     /* Checks if the classification of every line is the same
     */
-    private boolean pureGini(String[] lines){
+    private boolean pureClassification(String[] lines){
         if(lines.length == 0){
             return true;
         }
@@ -266,59 +270,34 @@ public class Classifier {
         return true;
     }
 
-    public DNode giniDecide() {
+    public DNode createDecisionNode() {
         String[] attributes = {"buying", "maint", "doors", "persons", "lug_boot", "safety"};
-        return giniDecide(trainingLines, attributes);
+        return createDecisionNode(trainingLines, attributes);
     }
 
-    private String giniBestClass(String[] lines){
-        int[] classCounts = giniGetClassCounts(lines);
-        String bestClass = null;
-        int maxCount = 0;
-
-        if(classCounts[0] > maxCount){
-            maxCount = classCounts[0];
-            bestClass = "unacc";
-        }
-        if(classCounts[1] > maxCount){
-            maxCount = classCounts[1];
-            bestClass = "acc";
-        }
-        if(classCounts[2] > maxCount){
-            maxCount = classCounts[2];
-            bestClass = "good";
-        }
-        if(classCounts[3] > maxCount){
-            maxCount = classCounts[3];
-            bestClass = "vgood";
-        }
-
-        return bestClass;
-    }
-
-    private DNode giniDecide(String[] lines, String[] attributes) {
+    private DNode createDecisionNode(String[] lines, String[] attributes) {
         if(lines.length == 0){
             return null;
         }
 
         //majority voting when went through all attributes
         if(attributes.length == 0){
-            return new DNode(null, giniBestClass(lines));
+            return new DNode(null, Utility.bestClass(lines));
         }
 
         //pure check - if pure, return a result node
-        if(pureGini(lines)){
+        if(pureClassification(lines)){
             return new DNode(null, lines[0].split(",")[6]);
         }
 
-        double lowestGiniSplit = Double.MAX_VALUE;
+        double bestSplitValue = Double.MAX_VALUE;
         String bestAttribute = null;
 
         for (String attribute : attributes) {
-            double curGiniSplit = giniSplit(lines, attribute);
+            double curSplitValue = attributeSplit(lines, attribute, gini);
 
-            if (curGiniSplit < lowestGiniSplit) {
-                lowestGiniSplit = curGiniSplit;
+            if (curSplitValue < bestSplitValue) {
+                bestSplitValue = curSplitValue;
                 bestAttribute = attribute;
             }
         }
@@ -328,42 +307,42 @@ public class Classifier {
 
         if (bestAttribute.equals("buying")) {
             return node
-                .addChild("vhigh", giniDecide(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
-                .addChild("high", giniDecide(subLines(lines, bestAttribute, "high"), subtractedArray))
-                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("low", giniDecide(subLines(lines, bestAttribute, "low"), subtractedArray));
+                .addChild("vhigh", createDecisionNode(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
+                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray));
         }
         if (bestAttribute.equals("maint")) {
             return node
-                .addChild("vhigh", giniDecide(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
-                .addChild("high", giniDecide(subLines(lines, bestAttribute, "high"), subtractedArray))
-                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("low", giniDecide(subLines(lines, bestAttribute, "low"), subtractedArray));
+                .addChild("vhigh", createDecisionNode(subLines(lines, bestAttribute, "vhigh"), subtractedArray))
+                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray));
         }
         if (bestAttribute.equals("doors")) {
             return node
-                .addChild("2", giniDecide(subLines(lines, bestAttribute, "2"), subtractedArray))
-                .addChild("3", giniDecide(subLines(lines, bestAttribute, "3"), subtractedArray))
-                .addChild("4", giniDecide(subLines(lines, bestAttribute, "4"), subtractedArray))
-                .addChild("5more", giniDecide(subLines(lines, bestAttribute, "5more"), subtractedArray));
+                .addChild("2", createDecisionNode(subLines(lines, bestAttribute, "2"), subtractedArray))
+                .addChild("3", createDecisionNode(subLines(lines, bestAttribute, "3"), subtractedArray))
+                .addChild("4", createDecisionNode(subLines(lines, bestAttribute, "4"), subtractedArray))
+                .addChild("5more", createDecisionNode(subLines(lines, bestAttribute, "5more"), subtractedArray));
         }
         if (bestAttribute.equals("persons")) {
             return node
-                .addChild("2", giniDecide(subLines(lines, bestAttribute, "2"), subtractedArray))
-                .addChild("4", giniDecide(subLines(lines, bestAttribute, "4"), subtractedArray))
-                .addChild("more", giniDecide(subLines(lines, bestAttribute, "more"), subtractedArray));
+                .addChild("2", createDecisionNode(subLines(lines, bestAttribute, "2"), subtractedArray))
+                .addChild("4", createDecisionNode(subLines(lines, bestAttribute, "4"), subtractedArray))
+                .addChild("more", createDecisionNode(subLines(lines, bestAttribute, "more"), subtractedArray));
         }
         if (bestAttribute.equals("lug_boot")) {
             return node
-                .addChild("small", giniDecide(subLines(lines, bestAttribute, "small"), subtractedArray))
-                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("big", giniDecide(subLines(lines, bestAttribute, "big"), subtractedArray));
+                .addChild("small", createDecisionNode(subLines(lines, bestAttribute, "small"), subtractedArray))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("big", createDecisionNode(subLines(lines, bestAttribute, "big"), subtractedArray));
         }
         if (bestAttribute.equals("safety")) {
             return node
-                .addChild("low", giniDecide(subLines(lines, bestAttribute, "low"), subtractedArray))
-                .addChild("med", giniDecide(subLines(lines, bestAttribute, "med"), subtractedArray))
-                .addChild("high", giniDecide(subLines(lines, bestAttribute, "high"), subtractedArray));
+                .addChild("low", createDecisionNode(subLines(lines, bestAttribute, "low"), subtractedArray))
+                .addChild("med", createDecisionNode(subLines(lines, bestAttribute, "med"), subtractedArray))
+                .addChild("high", createDecisionNode(subLines(lines, bestAttribute, "high"), subtractedArray));
         }
         return null;
     }
@@ -380,108 +359,63 @@ public class Classifier {
         return list.toArray(new String[list.size()]);
     }
 
-    private int[] giniGetClassCounts(String[] lines){
-        int nUnacc = 0;
-        int nAcc = 0;
-        int nGood = 0;
-        int nVgood = 0;
-        int numLines = lines.length;
-
-        for(int i = 0; i < numLines; i++){
-            String classification = lines[i].split(",")[NUM_ATTRIBUTES];
-
-            if(classification.equals("unacc")){
-                nUnacc++;
-            }
-            if(classification.equals("acc")){
-                nAcc++;
-            }
-            if(classification.equals("good")){
-                nGood++;
-            }
-            if(classification.equals("vgood")){
-                nVgood++;
-            }
-        }
-
-        int ret[] = {nUnacc, nAcc, nGood, nVgood};
-        return ret;
-    }
-
-    /* lines should only have the particular attribute value (ex Maint=vhigh)
+    /* computes split score for a particular attribute
     */
-    private double gini(String[] lines){
-        if(lines.length == 0){
-            return 0.0;
-        }
-
-        int[] classCounts = giniGetClassCounts(lines);
-        int numLines = lines.length;
-
-        return 1 
-            - Math.pow(((double)classCounts[0]/numLines), 2)
-            - Math.pow(((double)classCounts[1]/numLines), 2) 
-            - Math.pow(((double)classCounts[2]/numLines), 2) 
-            - Math.pow(((double)classCounts[3]/numLines), 2);
-    }
-
-    /* computes gini split for a particular attribute
-    */
-    private double giniSplit(String[] lines, String attribute){
+    private double attributeSplit(String[] lines, String attribute, AttributeSelectionMeasurement measurement){
         double ret;
         if(attribute.equals("buying")){
             String[] n1Lines = subLines(lines, attribute, "vhigh");
             String[] n2Lines = subLines(lines, attribute, "high");
             String[] n3Lines = subLines(lines, attribute, "med");
             String[] n4Lines = subLines(lines, attribute, "low");
-            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
-                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
-                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
-                    +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
+            ret =      (n1Lines.length/(double)lines.length)*measurement.measure(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*measurement.measure(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*measurement.measure(n3Lines)
+                    +   (n4Lines.length/(double)lines.length)*measurement.measure(n4Lines);
         }
         else if(attribute.equals("maint")){
             String[] n1Lines = subLines(lines, attribute, "vhigh");
             String[] n2Lines = subLines(lines, attribute, "high");
             String[] n3Lines = subLines(lines, attribute, "med");
             String[] n4Lines = subLines(lines, attribute, "low");
-            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
-                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
-                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
-                    +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
+            ret =      (n1Lines.length/(double)lines.length)*measurement.measure(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*measurement.measure(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*measurement.measure(n3Lines)
+                    +   (n4Lines.length/(double)lines.length)*measurement.measure(n4Lines);
         }
         else if(attribute.equals("doors")){
             String[] n1Lines = subLines(lines, attribute, "2");
             String[] n2Lines = subLines(lines, attribute, "3");
             String[] n3Lines = subLines(lines, attribute, "4");
             String[] n4Lines = subLines(lines, attribute, "5more");
-            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
-                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
-                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines)
-                    +   (n4Lines.length/(double)lines.length)*gini(n4Lines);
+            ret =      (n1Lines.length/(double)lines.length)*measurement.measure(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*measurement.measure(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*measurement.measure(n3Lines)
+                    +   (n4Lines.length/(double)lines.length)*measurement.measure(n4Lines);
         }
         else if(attribute.equals("persons")){
             String[] n1Lines = subLines(lines, attribute, "2");
             String[] n2Lines = subLines(lines, attribute, "4");
             String[] n3Lines = subLines(lines, attribute, "more");
-            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
-                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
-                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
+            ret =      (n1Lines.length/(double)lines.length)*measurement.measure(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*measurement.measure(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*measurement.measure(n3Lines);
         }
         else if(attribute.equals("lug_boot")){
             String[] n1Lines = subLines(lines, attribute, "small");
             String[] n2Lines = subLines(lines, attribute, "med");
             String[] n3Lines = subLines(lines, attribute, "big");
-            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
-                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
-                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
+            ret =      (n1Lines.length/(double)lines.length)*measurement.measure(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*measurement.measure(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*measurement.measure(n3Lines);
         }
         else if(attribute.equals("safety")){
             String[] n1Lines = subLines(lines, attribute, "low");
             String[] n2Lines = subLines(lines, attribute, "med");
             String[] n3Lines = subLines(lines, attribute, "high");
-            ret =      (n1Lines.length/(double)lines.length)*gini(n1Lines)
-                    +   (n2Lines.length/(double)lines.length)*gini(n2Lines)
-                    +   (n3Lines.length/(double)lines.length)*gini(n3Lines);
+            ret =      (n1Lines.length/(double)lines.length)*measurement.measure(n1Lines)
+                    +   (n2Lines.length/(double)lines.length)*measurement.measure(n2Lines)
+                    +   (n3Lines.length/(double)lines.length)*measurement.measure(n3Lines);
         }
         else{
              ret = -1;

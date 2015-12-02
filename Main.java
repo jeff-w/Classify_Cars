@@ -264,7 +264,7 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step5-----------------------------------------------");
-        DNode node = c.giniDecide();
+        DNode node = c.createDecisionNode();
         node.print("", 0);
         System.out.println("----------------------------------------------------\n");
 
