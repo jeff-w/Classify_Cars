@@ -22,8 +22,8 @@ public class OneHot_Classifier extends Classifier {
     	NUM_ATTRIBUTES = 21;
     	NUM_ATTRIBUTE_VALUES = 42;
 
-       jointCounts = new int[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
-       likelihoods = new double[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
+        jointCounts = new int[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
+        likelihoods = new double[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
 
     	for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
     		for (int j = 0; j < NUM_CLASSIFICATIONS; j++) {
@@ -35,8 +35,8 @@ public class OneHot_Classifier extends Classifier {
     /* Gets the index (0-20) of attribute "attr" and value "field"
      **/
     protected int indexOfAttribute(int attr, String field){
-	if (field.equals("1")) 		{ return attr * 2; }
-	else if (field.equals("0"))	{ return attr * 2 + 1; }
-	else				{ return -1; }
+	   if (field.equals("1")) 		{ return attr * 2; }
+	   else if (field.equals("0"))	{ return attr * 2 + 1; }
+	   else				            { return -1; }
     }
 }

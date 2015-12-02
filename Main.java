@@ -14,6 +14,11 @@ Step 5      IN PROGRESS    ***
 Step 6      DONE    SEEMS TO WORK
 Step 7      DONE    WHATEVER
 Step 8      TODO    ***
+        2   DONE    BLAH
+        3   DONE    OK
+        4   DONE    SURE
+        5   TODO    ***
+        6   TODO    ***
 */
 
 /*IMPORTS*/
@@ -278,11 +283,29 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step8-----------------------------------------------");
+        System.out.println();
+
+        System.out.println("8.2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ohc.train(RANDOM_OH_TRAINING);
-        System.out.println();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ohc.test("RANDOM");
-        System.out.println();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ohc.printConfusionMatrix(ohc.buildConfusionMatrix("RANDOM"));
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println();
         System.out.println("----------------------------------------------------\n");
     }
 }

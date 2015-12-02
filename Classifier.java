@@ -86,8 +86,8 @@ public class Classifier {
             ArrayList<String> list = new ArrayList<String>();
 			while ((line = reader.readLine()) != null) {
 				String[] values = line.split(",", -1);
-             			classificationIndex = indexOfClassification(values[NUM_ATTRIBUTES]);
-                		classificationCounts[classificationIndex]++;
+     			classificationIndex = indexOfClassification(values[NUM_ATTRIBUTES]);
+        		classificationCounts[classificationIndex]++;
 				for (int i = 0; i < NUM_ATTRIBUTES; i++) {
 					attributeIndex = indexOfAttribute(i, values[i]);
 					jointCounts[attributeIndex][classificationIndex]++;
