@@ -10,8 +10,8 @@ Step 1      DONE    TESTED
 Step 2      DONE    TESTED
 Step 3      DONE    TESTED
 Step 4      DONE    TESTED
-Step 5      TODO    ***
-Step 6      TODO    ***
+Step 5      IN PROGRESS    ***
+Step 6      DONE    SEEMS TO WORK
 Step 7      DONE    WHATEVER
 Step 8      TODO    ***
 */
@@ -268,7 +268,8 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step6-----------------------------------------------");
-        
+        System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node, RANDOM_TRAINING));
+        System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node, RANDOM_TESTING));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step7-----------------------------------------------");

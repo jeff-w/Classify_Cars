@@ -248,6 +248,70 @@ public class Classifier {
         }
     }
 
+    public double getTreeAccuracy(DNode tree, String fileName){
+        Scanner in = null;
+        try{
+            in = new Scanner(new FileReader(fileName));
+        }
+        catch(FileNotFoundException e){
+            System.out.println("[EXITING] In getTreeAccuracy(): file not found (Scanner): " + e);
+            System.exit(1);
+        }
+        
+        int numLines = 0;
+        int numCorrect = 0;
+
+        while(in.hasNext()){
+            String line = in.next();
+            String[] fields = line.split(",");  //size 7
+
+            if(fields[6].equals(classifyLine(tree, line))){
+                numCorrect++;
+            }
+            numLines++;
+        }
+
+        return ((double)numCorrect) / numLines;
+    }
+
+    private String classifyLine(DNode root, String line){
+        if(root == null){
+            return null;
+        }
+
+        DNode cur = root;
+
+        //traverse until hit a leaf
+        while(cur.getAttribute() != null){
+            cur = getChild(cur, line);
+        }
+
+        //now cur points to a leaf
+        return cur.getResult();
+    }
+
+    /* the DNode is guaranteed not to be a leaf
+    The child we want to go to may not exist; in that case, pick randomly
+    There will be at least one child
+    */
+    private DNode getChild(DNode cur, String line){
+        String[] fields = line.split(",");
+        String branchToTake = fields[indexOfAttributeType(cur.getAttribute())];
+
+        Map<String, DNode> children = cur.getChildren();
+        DNode child = children.get(branchToTake);
+
+        if(child == null){
+            //pick one randomly from the ones in the map
+            Random rand = new Random();
+            List<String> keys = new ArrayList<String>(children.keySet());
+            String randomKey = keys.get(rand.nextInt(keys.size()));
+            return children.get(randomKey);
+        }
+
+        return child;
+    }
+
     /* Checks if the classification of every line is the same
     */
     private boolean pureGini(String[] lines){
