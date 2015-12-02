@@ -1,11 +1,23 @@
 public class Constants {
+    // Car data file
+    public static final String DATA_FILE               = "car.data";
+
 	// Variables for manual text files
-    public static String MANUAL_TESTING          = "test_manual_split.txt";      //1-355
-    public static String MANUAL_RESULTS          = "results_manual_split.txt";
+    public static final String MANUAL_TRAINING         = "train_manual_split.txt";     //356-1728
+    public static String MANUAL_TESTING                = "test_manual_split.txt";      //1-355
+    public static String MANUAL_RESULTS                = "results_manual_split.txt";
+    public static final String MANUAL_OH_TRAINING      = "train_manual_onehot.txt";
+    public static final String MANUAL_OH_TESTING       = "test_manual_onehot.txt";
+    public static final String MANUAL_OH_RESULTS       = "results_manual_onehot.txt";
 
     // Variables for random text files
-    public static String RANDOM_TESTING          = "test_random_split.txt";
-    public static String RANDOM_RESULTS          = "results_random_split.txt";
+    public static final String RANDOM_TRAINING         = "train_random_split.txt";
+    public static String RANDOM_TESTING                = "test_random_split.txt";
+    public static String RANDOM_TRAINING_RESULTS       = "training_results_random_split.txt";    
+    public static String RANDOM_RESULTS                = "results_random_split.txt";
+    public static final String RANDOM_OH_TRAINING      = "train_random_onehot.txt";
+    public static final String RANDOM_OH_TESTING       = "test_random_onehot.txt";
+    public static final String RANDOM_OH_RESULTS       = "results_random_onehot.txt";
 
     // Indices into our arrays (for classification values)
     public static final int CLASS_UNACC_INDEX          = 0;

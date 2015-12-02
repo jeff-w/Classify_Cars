@@ -256,15 +256,18 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step2-----------------------------------------------");
-        c.train(RANDOM_TRAINING);
+        c.train(Constants.RANDOM_TRAINING);
+        c.test(Constants.RANDOM_TRAINING, Constants.RANDOM_TRAINING_RESULTS);
+        System.out.println("----------------------------------------------------");
+        c.printConfusionMatrix(c.buildConfusionMatrix(Constants.RANDOM_TRAINING_RESULTS));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step3-----------------------------------------------");
-        c.test("RANDOM");
+        c.test(Constants.RANDOM_TESTING, Constants.RANDOM_RESULTS);
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step4-----------------------------------------------");
-        c.printConfusionMatrix(c.buildConfusionMatrix("RANDOM"));
+        c.printConfusionMatrix(c.buildConfusionMatrix(Constants.RANDOM_RESULTS));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step5-----------------------------------------------");
@@ -280,12 +283,12 @@ public class Main {
 
         System.out.println("Step6-----------------------------------------------");
         System.out.println("Using Gini Index");
-        System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node1, RANDOM_TRAINING));
-        System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node1, RANDOM_TESTING));
+        System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node1, Constants.RANDOM_TRAINING));
+        System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node1, Constants.RANDOM_TESTING));
         System.out.println("----------------------------------------------------");
         System.out.println("Using Information Gain");
-        System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node2, RANDOM_TRAINING));
-        System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node2, RANDOM_TESTING));
+        System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node2, Constants.RANDOM_TRAINING));
+        System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node2, Constants.RANDOM_TESTING));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step7-----------------------------------------------");
@@ -297,15 +300,15 @@ public class Main {
         System.out.println();
 
         System.out.println("8.2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        ohc.train(RANDOM_OH_TRAINING);
+        ohc.train(Constants.RANDOM_OH_TRAINING);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        ohc.test("RANDOM");
+        ohc.test(Constants.RANDOM_OH_TESTING, Constants.RANDOM_OH_RESULTS);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        ohc.printConfusionMatrix(ohc.buildConfusionMatrix("RANDOM"));
+        ohc.printConfusionMatrix(ohc.buildConfusionMatrix(Constants.RANDOM_OH_RESULTS));
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");

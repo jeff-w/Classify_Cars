@@ -132,27 +132,19 @@ public class Classifier {
         }
     }
 
-    /* 1. read INFILE line by line
+    /* 1. read 'testfile' line by line
      * 2. for each line, compute the 4 probabilities
      *      predicted class = max of the 4
      * 3. original 6 attr | Actual | Measured | Correct?
      *      (print these to terminal AND a new file)
      */
-    public void test(String type){
+    public void test(String testfile, String resultfile) {
         Scanner in =  null;
         PrintWriter out = null;
         try{
-            if(type.equals("MANUAL")){
-                in = new Scanner(new FileReader(MANUAL_TESTING));
-                out = new PrintWriter(MANUAL_RESULTS, "UTF-8");
-            }
-            else if(type.equals("RANDOM")){
-                in = new Scanner(new FileReader(RANDOM_TESTING));
-                out = new PrintWriter(RANDOM_RESULTS, "UTF-8");
-            }
-            else{
-                System.out.println("[EXITING] test() function: unsupported run type: " + type);
-                System.exit(1);
+            in = new Scanner(new FileReader(testfile));
+            if (resultfile != null) {
+                out = new PrintWriter(resultfile, "UTF-8");
             }
         }
         catch(FileNotFoundException e){
@@ -189,9 +181,11 @@ public class Classifier {
             String correct = result.equals(fields[NUM_ATTRIBUTES]) ? "yes" : "no";
                 
             //write the new file with results
-            out.print(line);
-            out.print("," + result);
-            out.println("," + correct);
+            if (resultfile != null) {
+                out.print(line);
+                out.print("," + result);
+                out.println("," + correct);                
+            }
             
             //write the results to terminal output
             System.out.format("%-50s", line);
@@ -206,19 +200,10 @@ public class Classifier {
 
     /* Builds the Confusion Matrix generated from the test() step 
     */
-    public int[][] buildConfusionMatrix(String type){
+    public int[][] buildConfusionMatrix(String resultfile){
         Scanner in = null;
         try{
-            if(type.equals("MANUAL")){
-                in = new Scanner(new FileReader(MANUAL_RESULTS));
-            }
-            else if(type.equals("RANDOM")){
-                in = new Scanner(new FileReader(RANDOM_RESULTS));
-            }
-            else{
-                System.out.println("[EXITING] buildConfusionMatrix(): unsupported run type: " + type);
-                System.exit(1);
-            }
+            in = new Scanner(new FileReader(resultfile));
         }
         catch(FileNotFoundException e){
             System.out.println("[EXITING] File not found (Scanner): " + e);
