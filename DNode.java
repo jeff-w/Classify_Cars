@@ -75,7 +75,6 @@ public class DNode {
 
 	public void print(String indent, int split_length) {
 		// check if attribute exist, if not print out result and return because no more children 
-		
 		if (getAttribute() == null) {
 			System.out.print( stringRepeat("-", 2)
 					+ "> "
@@ -100,6 +99,9 @@ public class DNode {
 			}
 
 			System.out.print(getAttribute() + "\n");
+
+			//remove branches that have no values
+			while(children.values().remove(null));
 			
 			int kids_left = children.size();
 			for (Map.Entry<String, DNode> entry: children.entrySet()) {
@@ -112,8 +114,7 @@ public class DNode {
 					node.print(indent + " " + stringRepeat(" ", (attribute_splitter.length() + 5)),
 							attribute_splitter.length() + 5);
 				} else {
-					node.print(indent + "|" + stringRepeat(" ", (attribute_splitter.length() + 5)),
-							attribute_splitter.length() + 5);
+					node.print(indent + "|" + stringRepeat(" ", (attribute_splitter.length() + 5)), attribute_splitter.length() + 5);
 				}
 				kids_left--;
 			}
