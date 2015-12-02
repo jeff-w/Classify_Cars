@@ -10,10 +10,15 @@ Step 1      DONE    TESTED
 Step 2      DONE    TESTED
 Step 3      DONE    TESTED
 Step 4      DONE    TESTED
-Step 5      TODO    ***
-Step 6      TODO    ***
-Step 7      DONE
+Step 5      IN PROGRESS    ***
+Step 6      DONE    SEEMS TO WORK
+Step 7      DONE    WHATEVER
 Step 8      TODO    ***
+        2   DONE    BLAH
+        3   DONE    OK
+        4   DONE    SURE
+        5   TODO    ***
+        6   TODO    ***
 */
 
 /*IMPORTS*/
@@ -241,8 +246,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-	   ///* 
-	Main self = new Main();
+        Main self = new Main();
         Classifier c = new Classifier();
         OneHot_Classifier ohc = new OneHot_Classifier();
 
@@ -252,15 +256,15 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step2-----------------------------------------------");
-        c.train(MANUAL_TRAINING);
+        c.train(RANDOM_TRAINING);
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step3-----------------------------------------------");
-        c.test("MANUAL");
+        c.test("RANDOM");
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step4-----------------------------------------------");
-        c.printConfusionMatrix(c.buildConfusionMatrix("MANUAL"));
+        c.printConfusionMatrix(c.buildConfusionMatrix("RANDOM"));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step5-----------------------------------------------");
@@ -269,40 +273,39 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step6-----------------------------------------------");
-        
+        System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node, RANDOM_TRAINING));
+        System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node, RANDOM_TESTING));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step7-----------------------------------------------");
-        self.oneHotEncode("MANUAL");
+        self.oneHotEncode("RANDOM");
         System.out.println("DONE");
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step8-----------------------------------------------");
-        
-        System.out.println("----------------------------------------------------");
+        System.out.println();
 
-
+        System.out.println("8.2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ohc.train(RANDOM_OH_TRAINING);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ohc.test("RANDOM");
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ohc.printConfusionMatrix(ohc.buildConfusionMatrix("RANDOM"));
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println("8.6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        System.out.println();
         System.out.println("----------------------------------------------------\n");
-//	*/
-	    //PRINT DECISION TREE TEST
-/*	    
-	    DNode age = new DNode("Age", null);
-	    DNode gender = new DNode("Gender", null);
-	    DNode height = new DNode("Height", null);
-	    DNode yes = new DNode(null, "YES");
-	    DNode no = new DNode(null, "NO");
-
-	    age.addChild("> 30", yes);
-	    age.addChild("<=30", gender);
-	    gender.addChild("M", no);
-	    gender.addChild("F", height);
-	    height.addChild(">6", yes);
-	    height.addChild("<=6", no);
-
-	    age.print("",0);
-*/
     }
 }
