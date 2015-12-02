@@ -10,7 +10,7 @@ Step 1      DONE    TESTED
 Step 2      DONE    TESTED
 Step 3      DONE    TESTED
 Step 4      DONE    TESTED
-Step 5      IN PROGRESS    ***
+Step 5      DONE    YUP
 Step 6      DONE    SEEMS TO WORK
 Step 7      DONE    WHATEVER
 Step 8      TODO    ***
@@ -271,22 +271,22 @@ public class Main {
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step5-----------------------------------------------");
-        System.out.println("Using Gini Index");
+        System.out.println("---Using Gini Index---");
         DNode node1 = c.createDecisionNode(true); // use Gini index
         node1.print("", 0);
         System.out.println("----------------------------------------------------");
-        System.out.println("Using Information Gain");
+        System.out.println("---Using Information Gain---");
         DNode node2 = c.createDecisionNode(false); // use information gain
         node2.print("", 0);
 
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step6-----------------------------------------------");
-        System.out.println("Using Gini Index");
+        System.out.println("---Using Gini Index---");
         System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node1, Constants.RANDOM_TRAINING));
         System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node1, Constants.RANDOM_TESTING));
         System.out.println("----------------------------------------------------");
-        System.out.println("Using Information Gain");
+        System.out.println("---Using Information Gain---");
         System.out.println("Accuracy of TRAINING:\t" + c.getTreeAccuracy(node2, Constants.RANDOM_TRAINING));
         System.out.println("Accuracy of TESTING:\t" + c.getTreeAccuracy(node2, Constants.RANDOM_TESTING));
         System.out.println("----------------------------------------------------\n");
@@ -312,11 +312,11 @@ public class Main {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        
+        //TODO
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        
+        //TODO
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println();
