@@ -6,13 +6,12 @@ public class Gini implements AttributeSelectionMeasurement {
             return 0.0;
         }
 
-        int[] classCounts = Utility.getClassCounts(lines);
-        int numLines = lines.length;
+        int[] counts = Utility.getClassCounts(lines);
+        double ret = 1.0;
+        for (int i = 0; i < counts.length; i++) {
+            ret -= Math.pow(((double)counts[i]/lines.length), 2);
+        }
 
-        return 1 
-            - Math.pow(((double)classCounts[0]/numLines), 2)
-            - Math.pow(((double)classCounts[1]/numLines), 2) 
-            - Math.pow(((double)classCounts[2]/numLines), 2) 
-            - Math.pow(((double)classCounts[3]/numLines), 2);
+        return ret;
     }
 }
