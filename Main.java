@@ -257,12 +257,14 @@ public class Main {
 
         System.out.println("Step2-----------------------------------------------");
         c.train(Constants.RANDOM_TRAINING);
+        System.out.println("---Testing against training data---");
         c.test(Constants.RANDOM_TRAINING, Constants.RANDOM_TRAINING_RESULTS);
         System.out.println("----------------------------------------------------");
         c.printConfusionMatrix(c.buildConfusionMatrix(Constants.RANDOM_TRAINING_RESULTS));
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step3-----------------------------------------------");
+        System.out.println("---Testing against test data---");
         c.test(Constants.RANDOM_TESTING, Constants.RANDOM_RESULTS);
         System.out.println("----------------------------------------------------\n");
 
@@ -300,9 +302,12 @@ public class Main {
 
         System.out.println("8.2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         ohc.train(Constants.RANDOM_OH_TRAINING);
+        System.out.println("---Testing one-hot against training data---");
+        ohc.test(Constants.RANDOM_OH_TRAINING, Constants.RANDOM_OH_TRAINING_RESULTS);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        System.out.println("---Testing one-hot against testing data---");
         ohc.test(Constants.RANDOM_OH_TESTING, Constants.RANDOM_OH_RESULTS);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 

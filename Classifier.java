@@ -60,7 +60,7 @@ public class Classifier {
     private static final int ATTR_SAFETY_HIGH_INDEX     = 20; 
     protected int NUM_ATTRIBUTE_VALUES                  = 21;
 
-    private int numDataPoints                           = 0;
+    private int numDataPoints                           = 4; // Initialize with add-one smoothing
     private int[] classificationCounts                  = new int[NUM_CLASSIFICATIONS];
     private double[] classificationPriorProbabilities   = new double[NUM_CLASSIFICATIONS];
     protected int[][] jointCounts;
@@ -78,6 +78,9 @@ public class Classifier {
     			jointCounts[i][j] = 1; // Initialize with add-one smoothing
     		}
     	}
+        for (int i = 0; i < NUM_CLASSIFICATIONS; i++) {
+            classificationCounts[i] = 1; // Initialize with add-one smoothing
+        }
         gini = new Gini();
         ig = new InformationGain();
         attributes = new String[]{"buying", "maint", "doors", "persons", "lug_boot", "safety"};
@@ -115,7 +118,6 @@ public class Classifier {
     private void calculateProbabilities() {
         for (int i = 0; i < NUM_CLASSIFICATIONS; i++) {
             classificationPriorProbabilities[i] = (double) classificationCounts[i] / numDataPoints;
-            System.out.println(classificationPriorProbabilities[i]);
         }
         for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
             for (int j = 0; j < NUM_CLASSIFICATIONS; j++) {
@@ -128,10 +130,6 @@ public class Classifier {
     public void train(String filename) {
     	loadCountsFromFile(filename);
         calculateProbabilities();
-        System.out.println("Total data points: " + numDataPoints);
-        for (int i = 0; i < NUM_ATTRIBUTE_VALUES; i++) {
-            System.out.format("%f, %f, %f, %f\n", likelihoods[i][0], likelihoods[i][1], likelihoods[i][2], likelihoods[i][3]);
-        }
     }
 
     /* 1. read 'testfile' line by line
@@ -158,6 +156,8 @@ public class Classifier {
             System.exit(1);
         }
         
+        int numCorrect = 0;
+        int numTotal = 0;
         while(in.hasNext()){
             //read line and tokenize
             String line = in.next();
@@ -180,8 +180,12 @@ public class Classifier {
             if(greatestDouble(pGood, pUnacc, pAcc, pVgood)){ result = "good";   }
             if(greatestDouble(pVgood, pUnacc, pAcc, pGood)){ result = "vgood";  }
 
-            String correct = result.equals(fields[NUM_ATTRIBUTES]) ? "yes" : "no";
-                
+            String correct = "no";
+            if (result.equals(fields[NUM_ATTRIBUTES])) {
+                correct = "yes";
+                numCorrect++;
+            }
+
             //write the new file with results
             if (resultfile != null) {
                 out.print(line);
@@ -190,10 +194,12 @@ public class Classifier {
             }
             
             //write the results to terminal output
-            System.out.format("%-50s", line);
-            System.out.print(result + "\t");
-            System.out.println(correct);
+            // System.out.format("%-50s", line);
+            // System.out.print(result + "\t");
+            // System.out.println(correct);
+            numTotal++;
         }
+        System.out.format("Accuracy: %f\n", numCorrect / (double) numTotal);
 
         //cleanup
         in.close();
