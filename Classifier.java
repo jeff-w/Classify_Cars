@@ -254,9 +254,9 @@ public class Classifier {
 
         while(in.hasNext()){
             String line = in.next();
-            String[] fields = line.split(",");  //size 7
+            String[] fields = line.split(",");  //size 7 or 22
 
-            if(fields[6].equals(classifyLine(tree, line))){
+            if(fields[NUM_ATTRIBUTES].equals(classifyLine(tree, line))){
                 numCorrect++;
             }
             numLines++;
@@ -285,7 +285,7 @@ public class Classifier {
     The child we want to go to may not exist; in that case, pick randomly
     There will be at least one child
     */
-    private DNode getChild(DNode cur, String line){
+    protected DNode getChild(DNode cur, String line){
         String[] fields = line.split(",");
         String branchToTake = fields[indexOfAttributeType(cur.getAttribute())];
 

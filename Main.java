@@ -13,12 +13,12 @@ Step 4      DONE    TESTED
 Step 5      DONE    YUP
 Step 6      DONE    SEEMS TO WORK
 Step 7      DONE    WHATEVER
-Step 8      TODO    ***
+Step 8      DONE    YESSSSS
         2   DONE    BLAH
         3   DONE    OK
         4   DONE    SURE
         5   DONE    HAHHHHH
-        6   TODO    ***
+        6   DONE    YAYY
 */
 
 /*IMPORTS*/
@@ -321,7 +321,13 @@ public class Main {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        //TODO
+        System.out.println("---Using Gini Index---");
+        System.out.println("Accuracy of TRAINING:\t" + ohc.getTreeAccuracy(node3, Constants.RANDOM_OH_TRAINING));
+        System.out.println("Accuracy of TESTING:\t" + ohc.getTreeAccuracy(node3, Constants.RANDOM_OH_TESTING));
+        System.out.println("----------------------------------------------------");
+        System.out.println("---Using Information Gain---");
+        System.out.println("Accuracy of TRAINING:\t" + ohc.getTreeAccuracy(node4, Constants.RANDOM_OH_TRAINING));
+        System.out.println("Accuracy of TESTING:\t" + ohc.getTreeAccuracy(node4, Constants.RANDOM_OH_TESTING));
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println();

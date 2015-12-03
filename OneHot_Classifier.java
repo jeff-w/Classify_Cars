@@ -88,4 +88,22 @@ public class OneHot_Classifier extends Classifier {
             .addChild("0", createDecisionNode(subLines(lines, bestAttribute, "0"), subtractedArray, useGini))
             .addChild("1", createDecisionNode(subLines(lines, bestAttribute, "1"), subtractedArray, useGini));
     }
+
+    protected DNode getChild(DNode cur, String line){
+        String[] fields = line.split(",");
+        String branchToTake = fields[Integer.parseInt((cur.getAttribute()).substring(4))]; //0 or 1
+
+        Map<String, DNode> children = cur.getChildren();
+        DNode child = children.get(branchToTake);
+
+        if(child == null){
+            //pick one randomly from the ones in the map
+            Random rand = new Random();
+            List<String> keys = new ArrayList<String>(children.keySet());
+            String randomKey = keys.get(rand.nextInt(keys.size()));
+            return children.get(randomKey);
+        }
+
+        return child;
+    }
 }
