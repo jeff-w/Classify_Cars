@@ -13,10 +13,10 @@ public class InformationGain implements AttributeSelectionMeasurement {
         for (int i = 0; i < counts.length; i++) {
             probability = counts[i] / (double)lines.length;
             if (probability != 0) {
-                ret += probability * Math.log10(probability) / logDivisor;
+                ret -= probability * Math.log10(probability) / logDivisor;
             }
         }
 
-        return 0 - ret;
+        return ret;
     }
 }
