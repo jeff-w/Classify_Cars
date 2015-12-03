@@ -6,8 +6,29 @@ public class Utility {
         int nVgood = 0;
         int numLines = lines.length;
 
+        if(numLines == 0){
+        	return new int[]{0,0,0,0};
+        }
+
+        String firstLine = lines[0];
+        String[] fields = firstLine.split(",");	//size 7 or 22
+        int classificationIndex = -1;
+
+        if(fields.length == 7){
+        	//regular
+        	classificationIndex = Constants.NUM_ATTRIBUTES;
+        }
+        else if(fields.length == 22){
+        	//oneHot
+        	classificationIndex = Constants.NUM_ATTRIBUTE_VALUES;
+        }
+        else{
+        	System.out.println("ERROR in Utility class");
+        	System.exit(1);
+        }
+
         for(int i = 0; i < numLines; i++){
-            String classification = lines[i].split(",")[Constants.NUM_ATTRIBUTES];
+            String classification = lines[i].split(",")[classificationIndex];
 
             if(classification.equals("unacc")){
                 nUnacc++;

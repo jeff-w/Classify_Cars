@@ -68,6 +68,7 @@ public class Classifier {
     private String[] trainingLines;
     private Gini gini;
     private InformationGain ig;
+    protected String[] attributes;
 
     public Classifier() {
     	jointCounts = new int[NUM_ATTRIBUTE_VALUES][NUM_CLASSIFICATIONS];
@@ -79,6 +80,7 @@ public class Classifier {
     	}
         gini = new Gini();
         ig = new InformationGain();
+        attributes = new String[]{"buying", "maint", "doors", "persons", "lug_boot", "safety"};
     }
 
     private void loadCountsFromFile(String filename) {
@@ -308,10 +310,10 @@ public class Classifier {
             return true;
         }
 
-        String classification = lines[0].split(",")[6];
+        String classification = lines[0].split(",")[NUM_ATTRIBUTES];
 
         for(String line : lines){
-            if(!classification.equals(line.split(",")[6])){
+            if(!classification.equals(line.split(",")[NUM_ATTRIBUTES])){
                 return false;
             }
         }
@@ -320,11 +322,10 @@ public class Classifier {
     }
 
     public DNode createDecisionNode(boolean useGini) {
-        String[] attributes = {"buying", "maint", "doors", "persons", "lug_boot", "safety"};
-        return createDecisionNode(trainingLines, attributes, useGini);
+        return createDecisionNode(trainingLines, attributes.clone(), useGini);
     }
 
-    private DNode createDecisionNode(String[] lines, String[] attributes, boolean useGini) {
+    protected DNode createDecisionNode(String[] lines, String[] attributes, boolean useGini) {
         AttributeSelectionMeasurement measurement;
         if (useGini) {
             measurement = new Gini();
@@ -343,7 +344,7 @@ public class Classifier {
 
         //pure check - if pure, return a result node
         if(pureClassification(lines)){
-            return new DNode(null, lines[0].split(",")[6]);
+            return new DNode(null, lines[0].split(",")[NUM_ATTRIBUTES]);
         }
 
         double bestSplitValue = Double.MAX_VALUE;
@@ -360,6 +361,10 @@ public class Classifier {
         DNode node = new DNode(bestAttribute, null);
         String[] subtractedArray = arraySubtract(attributes, bestAttribute);
 
+        return newNode(node, lines, subtractedArray, bestAttribute, useGini);
+    }
+
+    protected DNode newNode(DNode node, String[] lines, String[] subtractedArray, String bestAttribute, boolean useGini){
         if (bestAttribute.equals("buying")) {
             return node
                 .addChild("vhigh", createDecisionNode(subLines(lines, bestAttribute, "vhigh"), subtractedArray, useGini))
@@ -416,7 +421,7 @@ public class Classifier {
 
     /* computes split score for a particular attribute
     */
-    private double attributeSplit(String[] lines, String attribute, AttributeSelectionMeasurement measurement){
+    protected double attributeSplit(String[] lines, String attribute, AttributeSelectionMeasurement measurement){
         double ret;
         if(attribute.equals("buying")){
             String[] n1Lines = subLines(lines, attribute, "vhigh");
@@ -480,7 +485,7 @@ public class Classifier {
 
     /* Subset of lines
     */
-    private String[] subLines(String[] lines, String attribute, String attributeValue){
+    protected String[] subLines(String[] lines, String attribute, String attributeValue){
         ArrayList<String> list = new ArrayList<String>();
 
         for(String line : lines){

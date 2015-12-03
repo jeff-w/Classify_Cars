@@ -17,7 +17,7 @@ Step 8      TODO    ***
         2   DONE    BLAH
         3   DONE    OK
         4   DONE    SURE
-        5   TODO    ***
+        5   DONE    HAHHHHH
         6   TODO    ***
 */
 
@@ -278,7 +278,6 @@ public class Main {
         System.out.println("---Using Information Gain---");
         DNode node2 = c.createDecisionNode(false); // use information gain
         node2.print("", 0);
-
         System.out.println("----------------------------------------------------\n");
 
         System.out.println("Step6-----------------------------------------------");
@@ -312,7 +311,13 @@ public class Main {
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        //TODO
+        System.out.println("---Using Gini Index---");
+        DNode node3 = ohc.createDecisionNode(true); // use Gini index
+        node3.print("", 0);
+        System.out.println("----------------------------------------------------");
+        System.out.println("---Using Information Gain---");
+        DNode node4 = ohc.createDecisionNode(false); // use information gain
+        node4.print("", 0);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
         System.out.println("8.6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");

@@ -30,6 +30,18 @@ public class OneHot_Classifier extends Classifier {
     			jointCounts[i][j] = 1; // Initialize with add-one smoothing
     		}
     	}
+
+        attributes = new String[]{  "Attr0",
+                                    "Attr1", "Attr2", 
+                                    "Attr3", "Attr4", 
+                                    "Attr5", "Attr6", 
+                                    "Attr7", "Attr8", 
+                                    "Attr9", "Attr10", 
+                                    "Attr11", "Attr12", 
+                                    "Attr13", "Attr14", 
+                                    "Attr15", "Attr16", 
+                                    "Attr17", "Attr18", 
+                                    "Attr19", "Attr20" };
     }
 
     /* Gets the index (0-20) of attribute "attr" and value "field"
@@ -38,5 +50,42 @@ public class OneHot_Classifier extends Classifier {
 	   if (field.equals("1")) 		{ return attr * 2; }
 	   else if (field.equals("0"))	{ return attr * 2 + 1; }
 	   else				            { return -1; }
+    }
+
+    /*
+    Override
+    lines are like:     1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,unacc
+    attribute is like:  Attr2
+    */
+    protected double attributeSplit(String[] lines, String attribute, AttributeSelectionMeasurement measurement){
+        String[] zeroLines = subLines(lines, attribute, "0");
+        String[] oneLines = subLines(lines, attribute, "1");
+        return (zeroLines.length/(double)lines.length)*measurement.measure(zeroLines)
+                + (oneLines.length/(double)lines.length)*measurement.measure(oneLines);
+    }
+
+    /*
+    Override
+    lines are like:     1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,unacc
+    attribute is like:  Attr14
+    attributeValue is:  0 or 1
+    */
+    protected String[] subLines(String[] lines, String attribute, String attributeValue){
+        ArrayList<String> list = new ArrayList<String>();
+
+        for(String line : lines){
+            if(line.split(",")[Integer.parseInt(attribute.substring(4))].equals(attributeValue)){
+                list.add(line);
+            }
+        }
+
+        //make it back to String[]
+        return list.toArray(new String[list.size()]);
+    }
+
+    protected DNode newNode(DNode node, String[] lines, String[] subtractedArray, String bestAttribute, boolean useGini){
+        return node
+            .addChild("0", createDecisionNode(subLines(lines, bestAttribute, "0"), subtractedArray, useGini))
+            .addChild("1", createDecisionNode(subLines(lines, bestAttribute, "1"), subtractedArray, useGini));
     }
 }
