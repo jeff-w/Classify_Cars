@@ -343,7 +343,7 @@ public class Classifier {
 
         //pure check - if pure, return a result node
         if(pureClassification(lines)){
-            return new DNode(null, lines[0].split(",")[6]);
+            return new DNode(null, lines[0].split(",")[6], true);
         }
 
         double bestSplitValue = Double.MAX_VALUE;

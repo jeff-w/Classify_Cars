@@ -14,9 +14,17 @@ public class DNode {
 	// Maps an attribute value to a child DNode.
 	private Map<String, DNode> children = new HashMap<String, DNode>();
 
+	private boolean isPureClassification = false;
+
 	public DNode(String attribute, String result) {
 		this.attribute = attribute;
 		this.result = result;
+	}
+
+	public DNode(String attribute, String result, boolean isPureClassification) {
+		this.attribute = attribute;
+		this.result = result;
+		this.isPureClassification = isPureClassification;
 	}
 
 	public DNode addChild(String value, DNode node) {
@@ -43,21 +51,25 @@ public class DNode {
 		return result;
 	}
 
+	private String getResultAndPurity() {
+		return getResult() + (isPureClassification ? " (PURE)" : "");
+	}
+
 	public void print(String indent, int split_length) {
 		// check if attribute exist, if not print out result and return because no more children 
 		if (getAttribute() == null) {
 			System.out.print( stringRepeat("-", 2)
 					+ "> "
-					+ stringRepeat(".", getResult().length()+4)
+					+ stringRepeat(".", getResultAndPurity().length()+4)
 					+ " \n"
 					+ indent.substring(0, indent.length()-split_length)
 					+ stringRepeat(" ", split_length)
 					+ ". "
-					+ getResult()
+					+ getResultAndPurity()
 					+ " . \n"
 					+ indent.substring(0, indent.length()-split_length)
 					+ stringRepeat(" ", split_length)
-					+ stringRepeat("'",getResult().length()+4)
+					+ stringRepeat("'",getResultAndPurity().length()+4)
 					+ "\n"
 					+ indent.substring(0, indent.length()-split_length)
 					+ "\n");
